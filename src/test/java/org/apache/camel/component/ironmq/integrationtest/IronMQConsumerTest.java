@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.camel.component.ironmq;
+package org.apache.camel.component.ironmq.integrationtest;
 
 import junit.framework.Assert;
 
@@ -23,13 +23,13 @@ import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Test;
 
-public class IronMQComponentTest extends CamelTestSupport {
+public class IronMQConsumerTest extends CamelTestSupport {
 
     @Test
     public void testIronMQ() throws Exception {
         MockEndpoint mock = getMockEndpoint("mock:result");
         mock.expectedMinimumMessageCount(1);       
-        template.sendBody("direct:test", "some payload");
+        template.sendBody("ironmq:testqueue?projectId=504320cad9a68d7f2b001108&token=-Yrzcp1qgDtv9EmzkXQIaB6Vh40", "some payload");
         
         assertMockEndpointsSatisfied();
         String id = mock.getExchanges().get(0).getIn().getHeader("MESSAGE_ID", String.class);
@@ -40,8 +40,7 @@ public class IronMQComponentTest extends CamelTestSupport {
     protected RouteBuilder createRouteBuilder() throws Exception {
         return new RouteBuilder() {
             public void configure() {
-                from("direct:test")
-                  .to("ironmq:testqueue?projectId=504320cad9a68d7f2b001108&token=-Yrzcp1qgDtv9EmzkXQIaB6Vh40")
+                from("ironmq:testqueue?projectId=504320cad9a68d7f2b001108&token=-Yrzcp1qgDtv9EmzkXQIaB6Vh40")
                   .to("mock:result");
             }
         };
