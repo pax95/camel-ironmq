@@ -4,6 +4,8 @@ public class IronMQConfiguration {
 	private String projectId;
 	private String token;
 	private String queueName;
+	private int timeout = 0;
+	private int maxMessagesPerPoll = 1;
 	
 	public String getProjectId() {
 		return projectId;
@@ -26,5 +28,20 @@ public class IronMQConfiguration {
 
 	public String getQueueName() {
 		return queueName;
+	}
+	
+	public int getTimeout() {
+		return timeout;
+	}
+	
+	public void setTimeout(int timeout) {
+		this.timeout = timeout;
+	}
+	public int getMaxMessagesPerPoll() {
+		return maxMessagesPerPoll;
+	}
+	
+	public void setMaxMessagesPerPoll(int maxMessagesPerPoll) {
+		this.maxMessagesPerPoll = maxMessagesPerPoll;
 	}
 }

@@ -18,18 +18,24 @@ package org.apache.camel.component.ironmq;
 
 import io.iron.ironmq.EmptyQueueException;
 import io.iron.ironmq.Message;
+import io.iron.ironmq.Messages;
+
+import java.util.LinkedList;
+import java.util.Queue;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.apache.camel.impl.ScheduledPollConsumer;
+import org.apache.camel.impl.ScheduledBatchPollingConsumer;
 import org.apache.camel.spi.Synchronization;
+import org.apache.camel.util.CastUtils;
+import org.apache.camel.util.ObjectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * The IronMQ consumer.
  */
-public class IronMQConsumer extends ScheduledPollConsumer {
+public class IronMQConsumer extends ScheduledBatchPollingConsumer {
 	private static final transient Logger LOG = LoggerFactory.getLogger(IronMQConsumer.class);
 	private final IronMQEndpoint endpoint;
 
@@ -40,12 +46,55 @@ public class IronMQConsumer extends ScheduledPollConsumer {
 
 	@Override
 	protected int poll() throws Exception {
-		Exchange exchange = endpoint.createExchange();
+		// must reset for each poll
+		shutdownRunningTask = null;
+		pendingExchanges = 0;
 		try {
-			Message message = endpoint.getQueue().get();
-			// create a message body
-			exchange.getIn().setBody(message.getBody());
-			exchange.getIn().setHeader(IronMQConstants.MESSAGE_ID, message.getId());
+			Messages messages = null;
+			if (endpoint.getConfiguration().getTimeout() > 0) {
+				messages = endpoint.getQueue().get(getMaxMessagesPerPoll(), endpoint.getConfiguration().getTimeout());
+				LOG.trace("Receiving messages with request [messagePerPoll{}, timeout {}]...", getMaxMessagesPerPoll(),
+						endpoint.getConfiguration().getTimeout());
+			} else {
+				messages = endpoint.getQueue().get(getMaxMessagesPerPoll());
+				LOG.trace("Receiving messages with request [messagePerPoll {}]...", getMaxMessagesPerPoll());
+			}
+
+			LOG.trace("Received {} messages", messages.getMessages().length);
+
+			Queue<Exchange> exchanges = createExchanges(messages.getMessages());
+			return processBatch(CastUtils.cast(exchanges));
+		} catch (EmptyQueueException e) {
+			return 0;
+		}
+	}
+
+	protected Queue<Exchange> createExchanges(Message[] messages) {
+		LOG.trace("Received {} messages in this poll", messages.length);
+
+		Queue<Exchange> answer = new LinkedList<Exchange>();
+		for (int i = 0; i < messages.length; i++) {
+			Exchange exchange = getEndpoint().createExchange(messages[i]);
+			answer.add(exchange);
+		}
+		return answer;
+	}
+
+	@Override
+	public int processBatch(Queue<Object> exchanges) throws Exception {
+		int total = exchanges.size();
+
+		for (int index = 0; index < total && isBatchAllowed(); index++) {
+			// only loop if we are started (allowed to run)
+			Exchange exchange = ObjectHelper.cast(Exchange.class, exchanges.poll());
+			// add current index and total as properties
+			exchange.setProperty(Exchange.BATCH_INDEX, index);
+			exchange.setProperty(Exchange.BATCH_SIZE, total);
+			exchange.setProperty(Exchange.BATCH_COMPLETE, index == total - 1);
+
+			// update pending number of exchanges
+			pendingExchanges = total - index - 1;
+
 			// add on completion to handle after work when the exchange is done
 			exchange.addOnCompletion(new Synchronization() {
 				public void onComplete(Exchange exchange) {
@@ -61,17 +110,13 @@ public class IronMQConsumer extends ScheduledPollConsumer {
 					return "IronMQConsumerOnCompletion";
 				}
 			});
-			// send message to next processor in the route
+
+			LOG.trace("Processing exchange [{}]...", exchange);
+
 			getProcessor().process(exchange);
-			return 1; // number of messages polled
-		} catch (EmptyQueueException e) {
-			return 0;
-		} finally {
-			// log exception if an exception occurred and was not handled
-			if (exchange.getException() != null) {
-				getExceptionHandler().handleException("Error processing exchange", exchange, exchange.getException());
-			}
 		}
+
+		return total;
 	}
 
 	/**
@@ -105,6 +150,11 @@ public class IronMQConsumer extends ScheduledPollConsumer {
 		} else {
 			LOG.warn("Exchange failed, so rolling back message status: {}", exchange);
 		}
+	}
+
+	@Override
+	public IronMQEndpoint getEndpoint() {
+		return (IronMQEndpoint) super.getEndpoint();
 	}
 
 }

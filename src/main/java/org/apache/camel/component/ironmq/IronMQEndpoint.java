@@ -21,8 +21,12 @@ import io.iron.ironmq.Cloud;
 import io.iron.ironmq.Queue;
 
 import org.apache.camel.Consumer;
+import org.apache.camel.Exchange;
+import org.apache.camel.ExchangePattern;
+import org.apache.camel.Message;
 import org.apache.camel.Processor;
 import org.apache.camel.Producer;
+import org.apache.camel.impl.DefaultExchange;
 import org.apache.camel.impl.ScheduledPollEndpoint;
 
 /**
@@ -36,7 +40,6 @@ public class IronMQEndpoint extends ScheduledPollEndpoint {
     public IronMQEndpoint(String uri, IronMQComponent component, IronMQConfiguration ironMQConfiguration) {
         super(uri, component);
         this.configuration = ironMQConfiguration;
-        this.queue = getClient().queue(configuration.getQueueName());
     }
 
     public Producer createProducer() throws Exception {
@@ -44,7 +47,21 @@ public class IronMQEndpoint extends ScheduledPollEndpoint {
     }
 
     public Consumer createConsumer(Processor processor) throws Exception {
-        return new IronMQConsumer(this, processor);
+        IronMQConsumer ironMQConsumer = new IronMQConsumer(this, processor);
+        ironMQConsumer.setMaxMessagesPerPoll(configuration.getMaxMessagesPerPoll());
+        return ironMQConsumer;
+    }
+
+    public Exchange createExchange(io.iron.ironmq.Message msg) {
+        return createExchange(getExchangePattern(), msg);
+    }
+
+    private Exchange createExchange(ExchangePattern pattern, io.iron.ironmq.Message msg) {
+        Exchange exchange = new DefaultExchange(this, pattern);
+        Message message = exchange.getIn();
+        message.setBody(msg.getBody());
+        message.setHeader(IronMQConstants.MESSAGE_ID, msg.getId());
+        return exchange;
     }
 
     public boolean isSingleton() {
@@ -59,6 +76,7 @@ public class IronMQEndpoint extends ScheduledPollEndpoint {
     protected void doStart() throws Exception {
     	super.doStart();
     	client = getClient();
+        this.queue = client.queue(configuration.getQueueName());
     }
     
     @Override
@@ -85,5 +103,9 @@ public class IronMQEndpoint extends ScheduledPollEndpoint {
     	client = new Client(configuration.getProjectId(), configuration.getToken(), Cloud.ironAWSUSEast);
     	return client;
     }
+    
+    public IronMQConfiguration getConfiguration() {
+		return configuration;
+	}
 
 }

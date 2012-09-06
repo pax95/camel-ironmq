@@ -41,9 +41,9 @@
       <version>2.10.1</version>
     </dependency>
 	<dependency>
-	  <groupId>ironmq</groupId>
+	  <groupId>io.iron</groupId>
   	  <artifactId>ironmq</artifactId>
-      <version>0.0.8</version>
+      <version>0.0.9</version>
 	</dependency>
     <!-- logging -->
     <dependency>
@@ -70,11 +70,6 @@
       <artifactId>camel-test</artifactId>
       <version>2.10.1</version>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-    	<groupId>com.google.code.gson</groupId>
-    	<artifactId>gson</artifactId>
-    	<version>2.1</version>
     </dependency>
   </dependencies>
   <repositories>

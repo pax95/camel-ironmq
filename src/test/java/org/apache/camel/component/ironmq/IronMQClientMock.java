@@ -1,7 +1,6 @@
 package org.apache.camel.component.ironmq;
 
 import io.iron.ironmq.Client;
-import io.iron.ironmq.MockQueue;
 import io.iron.ironmq.Queue;
 
 public class IronMQClientMock extends Client {
