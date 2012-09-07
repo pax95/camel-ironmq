@@ -37,10 +37,16 @@ public class IronMQProducer extends DefaultProducer {
     public void process(Exchange exchange) throws Exception {
     	String body = exchange.getIn().getBody(String.class);
         LOG.trace("Sending request [{}] from exchange [{}]...", body, exchange);
-    	String id = endpoint.getQueue().push(body);
-        LOG.trace("Received result [{}]", id);
-    	Message message = getMessageForResponse(exchange);
-        message.setHeader(IronMQConstants.MESSAGE_ID, id);
+        IronMQConfiguration configuration = endpoint.getConfiguration();
+        if (IronMQConstants.CLEARQUEUE.equals(exchange.getIn().getHeader(IronMQConstants.OPERATION))) {
+        	endpoint.getQueue().clearQueue();
+        }
+        else {
+        	String id = endpoint.getQueue().push(body, configuration.getTimeout(), configuration.getVisibilityDelay(), configuration.getExpiresIn());
+        	LOG.trace("Received id [{}]", id);
+        	Message message = getMessageForResponse(exchange);
+        	message.setHeader(IronMQConstants.MESSAGE_ID, id);
+        }
     }
     
     private Message getMessageForResponse(Exchange exchange) {

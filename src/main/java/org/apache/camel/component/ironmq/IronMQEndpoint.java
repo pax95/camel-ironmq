@@ -48,6 +48,7 @@ public class IronMQEndpoint extends ScheduledPollEndpoint {
 
     public Consumer createConsumer(Processor processor) throws Exception {
         IronMQConsumer ironMQConsumer = new IronMQConsumer(this, processor);
+        configureConsumer(ironMQConsumer);
         ironMQConsumer.setMaxMessagesPerPoll(configuration.getMaxMessagesPerPoll());
         return ironMQConsumer;
     }
@@ -100,7 +101,17 @@ public class IronMQEndpoint extends ScheduledPollEndpoint {
      * @return Client
      */
     Client createClient() {
-    	client = new Client(configuration.getProjectId(), configuration.getToken(), Cloud.ironAWSUSEast);
+    	Cloud cloud = Cloud.ironAWSUSEast;
+    	if (configuration.getIronMQEndpoint() != null) {
+    		if (configuration.getIronMQEndpoint().equals(Cloud.ironRackspaceDFW)) {
+    			cloud = Cloud.ironRackspaceDFW;
+    		}
+    		else {
+    			//let the user override the default configured client api endpoints
+    			cloud.setHost(configuration.getIronMQEndpoint());
+    		}
+    	}
+    	client = new Client(configuration.getProjectId(), configuration.getToken(), cloud);
     	return client;
     }
     

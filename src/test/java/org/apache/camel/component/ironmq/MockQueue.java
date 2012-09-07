@@ -25,10 +25,13 @@ public class MockQueue extends Queue {
 	}
 	
 	@Override
-	public String push(String msg) throws IOException {
+	public String push(String msg, long timeout, long delay, long expiresIn) throws IOException {
 		String randint = new BigInteger(24 * 8, new Random()).toString(16);
 		Message message = new Message();
 		message.setBody(msg);
+		message.setDelay(delay);
+		message.setExpiresIn(expiresIn);
+		message.setTimeout(timeout);
 		message.setId(randint);
 		messages.put(randint, message);
 		return randint;

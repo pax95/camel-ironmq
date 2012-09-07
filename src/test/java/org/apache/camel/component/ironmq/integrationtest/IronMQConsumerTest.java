@@ -19,17 +19,26 @@ package org.apache.camel.component.ironmq.integrationtest;
 import junit.framework.Assert;
 
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.ironmq.IronMQConstants;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit4.CamelTestSupport;
+import org.junit.Before;
 import org.junit.Test;
 
 public class IronMQConsumerTest extends CamelTestSupport {
+	
+	@Before
+	public void clearQueue() {
+		template.sendBodyAndHeader("ironmq:testqueue?projectId=504320cad9a68d7f2b001108&token=-Yrzcp1qgDtv9EmzkXQIaB6Vh40", "fo", IronMQConstants.OPERATION, IronMQConstants.CLEARQUEUE);
+	}
 
     @Test
     public void testIronMQ() throws Exception {
+    	String payload = "<foo>bar</foo>";
         MockEndpoint mock = getMockEndpoint("mock:result");
-        mock.expectedMinimumMessageCount(1);       
-        template.sendBody("ironmq:testqueue?projectId=504320cad9a68d7f2b001108&token=-Yrzcp1qgDtv9EmzkXQIaB6Vh40", "some payload");
+        mock.setExpectedMessageCount(1);
+        mock.expectedBodiesReceived(payload);
+        template.sendBody("ironmq:testqueue?projectId=504320cad9a68d7f2b001108&token=-Yrzcp1qgDtv9EmzkXQIaB6Vh40", payload);
         
         assertMockEndpointsSatisfied();
         String id = mock.getExchanges().get(0).getIn().getHeader("MESSAGE_ID", String.class);
