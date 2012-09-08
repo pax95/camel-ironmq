@@ -37,85 +37,89 @@ public class IronMQEndpoint extends ScheduledPollEndpoint {
 	private IronMQConfiguration configuration;
 	private Queue queue;
 
-    public IronMQEndpoint(String uri, IronMQComponent component, IronMQConfiguration ironMQConfiguration) {
-        super(uri, component);
-        this.configuration = ironMQConfiguration;
-    }
+	public IronMQEndpoint(String uri, IronMQComponent component, IronMQConfiguration ironMQConfiguration) {
+		super(uri, component);
+		this.configuration = ironMQConfiguration;
+	}
 
-    public Producer createProducer() throws Exception {
-        return new IronMQProducer(this);
-    }
+	public Producer createProducer() throws Exception {
+		return new IronMQProducer(this);
+	}
 
-    public Consumer createConsumer(Processor processor) throws Exception {
-        IronMQConsumer ironMQConsumer = new IronMQConsumer(this, processor);
-        configureConsumer(ironMQConsumer);
-        ironMQConsumer.setMaxMessagesPerPoll(configuration.getMaxMessagesPerPoll());
-        return ironMQConsumer;
-    }
+	public Consumer createConsumer(Processor processor) throws Exception {
+		IronMQConsumer ironMQConsumer = new IronMQConsumer(this, processor);
+		configureConsumer(ironMQConsumer);
+		ironMQConsumer.setMaxMessagesPerPoll(configuration.getMaxMessagesPerPoll());
+		return ironMQConsumer;
+	}
 
-    public Exchange createExchange(io.iron.ironmq.Message msg) {
-        return createExchange(getExchangePattern(), msg);
-    }
+	public Exchange createExchange(io.iron.ironmq.Message msg) {
+		return createExchange(getExchangePattern(), msg);
+	}
 
-    private Exchange createExchange(ExchangePattern pattern, io.iron.ironmq.Message msg) {
-        Exchange exchange = new DefaultExchange(this, pattern);
-        Message message = exchange.getIn();
-        message.setBody(msg.getBody());
-        message.setHeader(IronMQConstants.MESSAGE_ID, msg.getId());
-        return exchange;
-    }
+	private Exchange createExchange(ExchangePattern pattern, io.iron.ironmq.Message msg) {
+		Exchange exchange = new DefaultExchange(this, pattern);
+		Message message = exchange.getIn();
+		message.setBody(msg.getBody());
+		message.setHeader(IronMQConstants.MESSAGE_ID, msg.getId());
+		return exchange;
+	}
 
-    public boolean isSingleton() {
-        return true;
-    }
-    
-    public Queue getQueue() {
+	public boolean isSingleton() {
+		return true;
+	}
+
+	public Queue getQueue() {
 		return queue;
 	}
-    
-    @Override
-    protected void doStart() throws Exception {
-    	super.doStart();
-    	client = getClient();
-        this.queue = client.queue(configuration.getQueueName());
-    }
-    
-    @Override
-    protected void doStop() throws Exception {
-    	client = null;
-    }
-    
-    public Client getClient() {
-        if (client == null) {
-            client = createClient();
-        }
-        return client;
-    }
-    
-    public void setClient(Client client) {
-        this.client = client;
-    }
 
-    /**
-     * Provide the possibility to override this method for an mock implementation
-     * @return Client
-     */
-    Client createClient() {
-    	Cloud cloud = Cloud.ironAWSUSEast;
-    	if (configuration.getIronMQEndpoint() != null) {
-    		if (configuration.getIronMQEndpoint().equals(Cloud.ironRackspaceDFW)) {
-    			cloud = Cloud.ironRackspaceDFW;
-    		}
-    		else {
-    			//let the user override the default configured client api endpoints
-    			cloud.setHost(configuration.getIronMQEndpoint());
-    		}
-    	}
-    	client = new Client(configuration.getProjectId(), configuration.getToken(), cloud);
-    	return client;
-    }
-    
-    public IronMQConfiguration getConfiguration() {
+	@Override
+	protected void doStart() throws Exception {
+		super.doStart();
+		client = getConfiguration().getClient() != null ? getConfiguration().getClient() : getClient();
+		this.queue = client.queue(configuration.getQueueName());
+	}
+
+	@Override
+	protected void doStop() throws Exception {
+		client = null;
+		queue = null;
+		super.doStop();
+	}
+
+	public Client getClient() {
+		if (client == null) {
+			client = createClient();
+		}
+		return client;
+	}
+
+	public void setClient(Client client) {
+		this.client = client;
+	}
+
+	/**
+	 * Provide the possibility to override this method for an mock
+	 * implementation
+	 * 
+	 * @return Client
+	 */
+	Client createClient() {
+		Cloud cloud = Cloud.ironAWSUSEast;
+		if (configuration.getIronMQEndpoint() != null) {
+			if (configuration.getIronMQEndpoint().equals(Cloud.ironRackspaceDFW)) {
+				cloud = Cloud.ironRackspaceDFW;
+			} else {
+				// let the user override the default configured client api
+				// endpoints
+				cloud.setHost(configuration.getIronMQEndpoint());
+			}
+		}
+		client = new Client(configuration.getProjectId(), configuration.getToken(), cloud);
+		return client;
+	}
+
+	public IronMQConfiguration getConfiguration() {
 		return configuration;
 	}
 

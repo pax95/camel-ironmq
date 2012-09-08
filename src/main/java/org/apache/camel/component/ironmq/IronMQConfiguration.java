@@ -1,6 +1,10 @@
 package org.apache.camel.component.ironmq;
 
+import io.iron.ironmq.Client;
+
 public class IronMQConfiguration {
+	// consumer and producer
+	private Client client;
 	//consumer and producer
 	private String projectId;
 	//consumer and producer
@@ -17,6 +21,14 @@ public class IronMQConfiguration {
 	private int expiresIn = 604800;
 	//producer delay
 	private int visibilityDelay = 0;
+	
+	public Client getClient() {
+		return client;
+	}
+	
+	public void setClient(Client client) {
+		this.client = client;
+	}
 	
 	public String getProjectId() {
 		return projectId;

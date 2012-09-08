@@ -16,39 +16,23 @@
  */
 package org.apache.camel.component.ironmq;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import junit.framework.Assert;
-
-import org.apache.camel.CamelContext;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.Processor;
-import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.ProducerTemplate;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.apache.camel.test.junit4.CamelTestSupport;
+import org.apache.camel.test.junit4.CamelSpringTestSupport;
 import org.junit.Test;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-public class IronMQComponentTest extends CamelTestSupport {
-
-	private IronMQEndpoint endpoint;
-
-	@EndpointInject(uri = "mock:result")
-	private MockEndpoint result;
-	
-    @Test
-    public void testIronMQ() throws Exception {
-        MockEndpoint mock = getMockEndpoint("mock:result");
-        mock.expectedMinimumMessageCount(1);       
-        template.sendBody("direct:start", "some payload");
-        
-        assertMockEndpointsSatisfied();
-        String id = mock.getExchanges().get(0).getIn().getHeader("MESSAGE_ID", String.class);
-        Assert.assertNotNull(id);
-    }
+public class IronMQComponentSpringTest extends CamelSpringTestSupport {
     
+    @EndpointInject(uri = "direct:start")
+    private ProducerTemplate template;
+    
+    @EndpointInject(uri = "mock:result")
+    private MockEndpoint result;
     
     @Test
     public void sendInOnly() throws Exception {
@@ -66,7 +50,6 @@ public class IronMQComponentTest extends CamelTestSupport {
         assertEquals("This is my message text.", resultExchange.getIn().getBody());
         assertNotNull(resultExchange.getIn().getHeader(IronMQConstants.MESSAGE_ID));
         
-        assertEquals("This is my message text.", exchange.getIn().getBody());
         assertNotNull(exchange.getIn().getHeader(IronMQConstants.MESSAGE_ID));
     }
     
@@ -86,34 +69,11 @@ public class IronMQComponentTest extends CamelTestSupport {
         assertEquals("This is my message text.", resultExchange.getIn().getBody());
         assertNotNull(resultExchange.getIn().getHeader(IronMQConstants.MESSAGE_ID));
         
-        assertEquals("This is my message text.", exchange.getOut().getBody());
         assertNotNull(exchange.getOut().getHeader(IronMQConstants.MESSAGE_ID));
     }
-    
-    
-    @Override
-    protected CamelContext createCamelContext() throws Exception {
-        CamelContext context = super.createCamelContext();
-        IronMQComponent component = new IronMQComponent(context);
-        Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("projectId", "dummy");
-        parameters.put("token", "dummy");
-		endpoint = (IronMQEndpoint)component.createEndpoint("ironmq", "testqueue", parameters );
-		endpoint.setClient(new IronMQClientMock("dummy", "dummy"));
-        context.addComponent("ironmq", component);
-        return context;
-    }    
 
     @Override
-    protected RouteBuilder createRouteBuilder() throws Exception {
-        return new RouteBuilder() {
-            public void configure() {
-                from("direct:start")
-                  .to(endpoint);
-                
-                from(endpoint)
-                .to("mock:result");
-            }
-        };
+    protected ClassPathXmlApplicationContext createApplicationContext() {
+        return new ClassPathXmlApplicationContext("org/apache/camel/component/ironmq/IronMQComponentSpringTest-context.xml");
     }
 }
