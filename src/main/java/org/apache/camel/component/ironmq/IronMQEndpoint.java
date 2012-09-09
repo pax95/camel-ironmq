@@ -107,7 +107,7 @@ public class IronMQEndpoint extends ScheduledPollEndpoint {
 	Client createClient() {
 		Cloud cloud = Cloud.ironAWSUSEast;
 		if (configuration.getIronMQEndpoint() != null) {
-			if (configuration.getIronMQEndpoint().equals(Cloud.ironRackspaceDFW)) {
+			if (configuration.getIronMQEndpoint().equals(Cloud.ironRackspaceDFW.getHost())) {
 				cloud = Cloud.ironRackspaceDFW;
 			} else {
 				// let the user override the default configured client api
