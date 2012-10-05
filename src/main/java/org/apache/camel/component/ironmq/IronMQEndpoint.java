@@ -112,7 +112,7 @@ public class IronMQEndpoint extends ScheduledPollEndpoint {
 			} else {
 				// let the user override the default configured client api
 				// endpoints
-				cloud.setHost(configuration.getIronMQEndpoint());
+				cloud = new Cloud("https", configuration.getIronMQEndpoint(), 443);
 			}
 		}
 		client = new Client(configuration.getProjectId(), configuration.getToken(), cloud);
