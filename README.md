@@ -37,10 +37,10 @@ URI options:
     <td>IronMQ token</td>
   </tr>
   <tr>
-    <th>ironMQEndpoint</th>
+    <th>ironMQCloud</th>
     <td>ironAWSUSEast</td>
     <td>Shared</td>
-    <td>IronMQ region - currently only AWSUSEast and Rackspace are supported</td>
+    <td>Reference to a io.iron.ironmq.Cloud in the registry. See [IronIo documents](http://dev.iron.io/mq/reference/clouds/) for valid options</td>
   </tr>
   <tr>
     <th>timeout</th>
@@ -68,12 +68,21 @@ URI options:
   </tr>
 
 </table>
+
+Consumer example
+========
+
+	from("ironmq:testqueue?projectId=myIronMQProjectid&token=myIronMQToken&maxMessagesPerPoll=50").to(""mock:result"")
+
+
+Producer example
+========
+
+	from("direct:start").to("ironmq:testqueue?projectId=myIronMQProjectid&token=myIronMQToken").
+
 Building from source
 ====================
 
-	$ git clone git://github.com/pax95/iron_mq_java.git
-	$ cd iron_mq_java
-	$ mvn clean install
 	
 	$ git clone git://github.com/pax95/camel-ironmq.git
 	$ cd camel-ironmq

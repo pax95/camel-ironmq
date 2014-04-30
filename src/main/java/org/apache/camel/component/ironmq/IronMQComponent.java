@@ -27,29 +27,29 @@ import org.apache.camel.impl.ScheduledPollEndpoint;
  * Represents the component that manages {@link IronMQEndpoint}.
  */
 public class IronMQComponent extends DefaultComponent {
-	
-	public IronMQComponent(CamelContext context) {
-		super(context);
-	}
 
-	public IronMQComponent() {
-		super();
-	}
-	
+    public IronMQComponent(CamelContext context) {
+        super(context);
+    }
+
+    public IronMQComponent() {
+        super();
+    }
+
     protected Endpoint createEndpoint(String uri, String remaining, Map<String, Object> parameters) throws Exception {
-        IronMQConfiguration ironMQConfiguration = new  IronMQConfiguration();
+        IronMQConfiguration ironMQConfiguration = new IronMQConfiguration();
         setProperties(ironMQConfiguration, parameters);
         if (remaining == null || remaining.trim().length() == 0) {
             throw new IllegalArgumentException("Queue name must be specified.");
         }
-        
+
         ironMQConfiguration.setQueueName(remaining);
 
         if (ironMQConfiguration.getClient() == null && (ironMQConfiguration.getProjectId() == null || ironMQConfiguration.getToken() == null)) {
             throw new IllegalArgumentException("Client or project and token must be specified.");
         }
 
-    	Endpoint endpoint = new IronMQEndpoint(uri, this, ironMQConfiguration);
+        Endpoint endpoint = new IronMQEndpoint(uri, this, ironMQConfiguration);
         ((ScheduledPollEndpoint)endpoint).setConsumerProperties(parameters);
 
         return endpoint;

@@ -19,8 +19,6 @@ package org.apache.camel.component.ironmq;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.Assert;
-
 import org.apache.camel.CamelContext;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
@@ -29,68 +27,67 @@ import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit4.CamelTestSupport;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class IronMQComponentTest extends CamelTestSupport {
 
-	private IronMQEndpoint endpoint;
+    private IronMQEndpoint endpoint;
 
-	@EndpointInject(uri = "mock:result")
-	private MockEndpoint result;
-	
+    @EndpointInject(uri = "mock:result")
+    private MockEndpoint result;
+
     @Test
     public void testIronMQ() throws Exception {
         MockEndpoint mock = getMockEndpoint("mock:result");
-        mock.expectedMinimumMessageCount(1);       
+        mock.expectedMinimumMessageCount(1);
         template.sendBody("direct:start", "some payload");
-        
+
         assertMockEndpointsSatisfied();
         String id = mock.getExchanges().get(0).getIn().getHeader("MESSAGE_ID", String.class);
         Assert.assertNotNull(id);
     }
-    
-    
+
     @Test
     public void sendInOnly() throws Exception {
         result.expectedMessageCount(1);
-        
+
         Exchange exchange = template.send("direct:start", ExchangePattern.InOnly, new Processor() {
             public void process(Exchange exchange) throws Exception {
                 exchange.getIn().setBody("This is my message text.");
             }
         });
-        
+
         assertMockEndpointsSatisfied();
-        
+
         Exchange resultExchange = result.getExchanges().get(0);
         assertEquals("This is my message text.", resultExchange.getIn().getBody());
         assertNotNull(resultExchange.getIn().getHeader(IronMQConstants.MESSAGE_ID));
-        
+
         assertEquals("This is my message text.", exchange.getIn().getBody());
         assertNotNull(exchange.getIn().getHeader(IronMQConstants.MESSAGE_ID));
     }
-    
+
     @Test
     public void sendInOut() throws Exception {
         result.expectedMessageCount(1);
-        
+
         Exchange exchange = template.send("direct:start", ExchangePattern.InOut, new Processor() {
             public void process(Exchange exchange) throws Exception {
                 exchange.getIn().setBody("This is my message text.");
             }
         });
-        
+
         assertMockEndpointsSatisfied();
-        
+
         Exchange resultExchange = result.getExchanges().get(0);
         assertEquals("This is my message text.", resultExchange.getIn().getBody());
         assertNotNull(resultExchange.getIn().getHeader(IronMQConstants.MESSAGE_ID));
-        
+
         assertEquals("This is my message text.", exchange.getOut().getBody());
         assertNotNull(exchange.getOut().getHeader(IronMQConstants.MESSAGE_ID));
     }
-    
-    
+
     @Override
     protected CamelContext createCamelContext() throws Exception {
         CamelContext context = super.createCamelContext();
@@ -98,21 +95,19 @@ public class IronMQComponentTest extends CamelTestSupport {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("projectId", "dummy");
         parameters.put("token", "dummy");
-		endpoint = (IronMQEndpoint)component.createEndpoint("ironmq", "testqueue", parameters );
-		endpoint.setClient(new IronMQClientMock("dummy", "dummy"));
+        endpoint = (IronMQEndpoint)component.createEndpoint("ironmq", "testqueue", parameters);
+        endpoint.setClient(new IronMQClientMock("dummy", "dummy"));
         context.addComponent("ironmq", component);
         return context;
-    }    
+    }
 
     @Override
     protected RouteBuilder createRouteBuilder() throws Exception {
         return new RouteBuilder() {
             public void configure() {
-                from("direct:start")
-                  .to(endpoint);
-                
-                from(endpoint)
-                .to("mock:result");
+                from("direct:start").to(endpoint);
+
+                from(endpoint).to("mock:result");
             }
         };
     }

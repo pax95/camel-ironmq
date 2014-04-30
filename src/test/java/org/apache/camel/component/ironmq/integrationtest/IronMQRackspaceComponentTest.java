@@ -16,48 +16,57 @@
  */
 package org.apache.camel.component.ironmq.integrationtest;
 
-import junit.framework.Assert;
+import io.iron.ironmq.Cloud;
 
 import org.apache.camel.EndpointInject;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
+import org.apache.camel.impl.JndiRegistry;
 import org.apache.camel.test.junit4.CamelTestSupport;
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
 @Ignore("Must be manually tested. Provide your own projectId and token!")
 public class IronMQRackspaceComponentTest extends CamelTestSupport {
-	private String projectId = "myIronMQproject";
-	private String token = "myIronMQToken";
+    private String projectId = "myIronMQproject";
+    private String token = "myIronMQToken";
+    private Cloud cloud = Cloud.ironRackspaceLON;
 
-	@EndpointInject(uri = "direct:start")
-	private ProducerTemplate template;
+    @EndpointInject(uri = "direct:start")
+    private ProducerTemplate template;
 
-	@EndpointInject(uri = "mock:result")
-	private MockEndpoint result;
+    @EndpointInject(uri = "mock:result")
+    private MockEndpoint result;
 
-	@Test
-	public void testIronMQ() throws Exception {
-		result.setExpectedMessageCount(1);
-		result.expectedBodiesReceived("some payload");
-		template.sendBody("some payload");
+    @Test
+    public void testIronMQ() throws Exception {
+        result.setExpectedMessageCount(1);
+        result.expectedBodiesReceived("some payload");
+        template.sendBody("some payload");
 
-		assertMockEndpointsSatisfied();
-		String id = result.getExchanges().get(0).getIn().getHeader("MESSAGE_ID", String.class);
-		Assert.assertNotNull(id);
-	}
+        assertMockEndpointsSatisfied();
+        String id = result.getExchanges().get(0).getIn().getHeader("MESSAGE_ID", String.class);
+        Assert.assertNotNull(id);
+    }
 
-	@Override
-	protected RouteBuilder createRouteBuilder() throws Exception {
-		final String ironMQEndpoint = "ironmq:testqueue?projectId=" + projectId + "&token=" + token
-				+ "&ironMQEndpoint=mq-rackspace-dfw.iron.io";
-		return new RouteBuilder() {
-			public void configure() {
-				from("direct:start").to(ironMQEndpoint);
+    @Override
+    protected JndiRegistry createRegistry() throws Exception {
+        JndiRegistry registry = super.createRegistry();
+        registry.bind("ironMQCloud", cloud);
+        return registry;
+    }
 
-				from(ironMQEndpoint + "&maxMessagesPerPoll=5").to("mock:result");
-			}
-		};
-	}
+    @Override
+    protected RouteBuilder createRouteBuilder() throws Exception {
+        final String ironMQEndpoint = "ironmq:testqueue?projectId=" + projectId + "&token=" + token + "&ironMQCloud=#ironMQCloud";
+        return new RouteBuilder() {
+            public void configure() {
+                from("direct:start").to(ironMQEndpoint);
+
+                from(ironMQEndpoint + "&maxMessagesPerPoll=5").to("mock:result");
+            }
+        };
+    }
 }

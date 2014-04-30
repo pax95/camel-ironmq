@@ -22,53 +22,53 @@ import org.apache.camel.ExchangePattern;
 import org.apache.camel.Processor;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.apache.camel.test.junit4.CamelSpringTestSupport;
+import org.apache.camel.test.spring.CamelSpringTestSupport;
 import org.junit.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class IronMQComponentSpringTest extends CamelSpringTestSupport {
-    
+
     @EndpointInject(uri = "direct:start")
     private ProducerTemplate template;
-    
+
     @EndpointInject(uri = "mock:result")
     private MockEndpoint result;
-    
+
     @Test
     public void sendInOnly() throws Exception {
         result.expectedMessageCount(1);
-        
+
         Exchange exchange = template.send("direct:start", ExchangePattern.InOnly, new Processor() {
             public void process(Exchange exchange) throws Exception {
                 exchange.getIn().setBody("This is my message text.");
             }
         });
-        
+
         assertMockEndpointsSatisfied();
-        
+
         Exchange resultExchange = result.getExchanges().get(0);
         assertEquals("This is my message text.", resultExchange.getIn().getBody());
         assertNotNull(resultExchange.getIn().getHeader(IronMQConstants.MESSAGE_ID));
-        
+
         assertNotNull(exchange.getIn().getHeader(IronMQConstants.MESSAGE_ID));
     }
-    
+
     @Test
     public void sendInOut() throws Exception {
         result.expectedMessageCount(1);
-        
+
         Exchange exchange = template.send("direct:start", ExchangePattern.InOut, new Processor() {
             public void process(Exchange exchange) throws Exception {
                 exchange.getIn().setBody("This is my message text.");
             }
         });
-        
+
         assertMockEndpointsSatisfied();
-        
+
         Exchange resultExchange = result.getExchanges().get(0);
         assertEquals("This is my message text.", resultExchange.getIn().getBody());
         assertNotNull(resultExchange.getIn().getHeader(IronMQConstants.MESSAGE_ID));
-        
+
         assertNotNull(exchange.getOut().getHeader(IronMQConstants.MESSAGE_ID));
     }
 

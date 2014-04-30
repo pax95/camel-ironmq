@@ -26,37 +26,36 @@ import org.slf4j.LoggerFactory;
  * The IronMQ producer.
  */
 public class IronMQProducer extends DefaultProducer {
-	private static final transient Logger LOG = LoggerFactory.getLogger(IronMQProducer.class);
-	private IronMQEndpoint endpoint;
+    private static final transient Logger LOG = LoggerFactory.getLogger(IronMQProducer.class);
+    private IronMQEndpoint endpoint;
 
-	public IronMQProducer(IronMQEndpoint endpoint) {
-		super(endpoint);
-		this.endpoint = endpoint;
-	}
+    public IronMQProducer(IronMQEndpoint endpoint) {
+        super(endpoint);
+        this.endpoint = endpoint;
+    }
 
-	public void process(Exchange exchange) throws Exception {
-		String body = exchange.getIn().getBody(String.class);
-		LOG.trace("Sending request [{}] from exchange [{}]...", body, exchange);
-		IronMQConfiguration configuration = endpoint.getConfiguration();
-		if (IronMQConstants.CLEARQUEUE.equals(exchange.getIn().getHeader(IronMQConstants.OPERATION))) {
-			endpoint.getQueue().clear();
-		} else {
-			String id = endpoint.getQueue().push(body, configuration.getTimeout(), configuration.getVisibilityDelay(),
-					configuration.getExpiresIn());
-			LOG.trace("Received id [{}]", id);
-			Message message = getMessageForResponse(exchange);
-			message.setHeader(IronMQConstants.MESSAGE_ID, id);
-		}
-	}
+    public void process(Exchange exchange) throws Exception {
+        String body = exchange.getIn().getBody(String.class);
+        LOG.trace("Sending request [{}] from exchange [{}]...", body, exchange);
+        IronMQConfiguration configuration = endpoint.getConfiguration();
+        if (IronMQConstants.CLEARQUEUE.equals(exchange.getIn().getHeader(IronMQConstants.OPERATION))) {
+            endpoint.getQueue().clear();
+        } else {
+            String id = endpoint.getQueue().push(body, configuration.getTimeout(), configuration.getVisibilityDelay(), configuration.getExpiresIn());
+            LOG.trace("Received id [{}]", id);
+            Message message = getMessageForResponse(exchange);
+            message.setHeader(IronMQConstants.MESSAGE_ID, id);
+        }
+    }
 
-	private Message getMessageForResponse(Exchange exchange) {
-		if (exchange.getPattern().isOutCapable()) {
-			Message out = exchange.getOut();
-			out.copyFrom(exchange.getIn());
-			return out;
-		}
+    private Message getMessageForResponse(Exchange exchange) {
+        if (exchange.getPattern().isOutCapable()) {
+            Message out = exchange.getOut();
+            out.copyFrom(exchange.getIn());
+            return out;
+        }
 
-		return exchange.getIn();
-	}
+        return exchange.getIn();
+    }
 
 }

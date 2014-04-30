@@ -16,6 +16,8 @@
  */
 package org.apache.camel.component.ironmq.integrationtest;
 
+import io.iron.ironmq.Cloud;
+
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -25,6 +27,7 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.ironmq.IronMQConstants;
 import org.apache.camel.component.mock.MockEndpoint;
+import org.apache.camel.impl.JndiRegistry;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -32,43 +35,51 @@ import org.junit.Test;
 
 @Ignore("Must be manually tested. Provide your own projectId and token!")
 public class IronMQFIFOTest extends CamelTestSupport {
-	private String projectId = "myIronMQproject";
-	private String token = "myIronMQToken";
+    private String projectId = "myIronMQproject";
+    private String token = "myIronMQToken";
+    private Cloud cloud = Cloud.ironRackspaceLON;
 
-	private final String ironMQEndpoint = "ironmq:testqueue?projectId=" + projectId + "&token=" + token;
+    private final String ironMQEndpoint = "ironmq:testqueue?projectId=" + projectId + "&token=" + token + "&maxMessagesPerPoll=20&ironMQCloud=#RackSpace-London";
 
-	@EndpointInject(uri = "direct:start")
-	private ProducerTemplate template;
+    @EndpointInject(uri = "direct:start")
+    private ProducerTemplate template;
 
-	@EndpointInject(uri = "mock:result")
-	private MockEndpoint result;
+    @EndpointInject(uri = "mock:result")
+    private MockEndpoint result;
 
-	@Before
-	public void clearQueue() {
-		template.sendBodyAndHeader(ironMQEndpoint, "fo", IronMQConstants.OPERATION, IronMQConstants.CLEARQUEUE);
-		for (int i = 1; i <= 50; i++) {
-			template.sendBody(ironMQEndpoint, "<foo>" + i + "</foo>");
-		}
-	}
+    @Before
+    public void clearQueue() {
+        template.sendBodyAndHeader(ironMQEndpoint, "fo", IronMQConstants.OPERATION, IronMQConstants.CLEARQUEUE);
+        for (int i = 1; i <= 50; i++) {
+            template.sendBody(ironMQEndpoint, "<foo>" + i + "</foo>");
+        }
+    }
 
-	@Test
-	public void testIronMQFifo() throws Exception {
-		result.setExpectedMessageCount(50);
-		assertMockEndpointsSatisfied(30, TimeUnit.SECONDS);
-		int i = 1;
-		List<Exchange> exchanges = result.getExchanges();
-		for (Exchange exchange : exchanges) {
-			assertEquals("<foo>" + i + "</foo>", exchange.getIn().getBody(String.class));
-			i++;
-		}
-	}
+    @Override
+    protected JndiRegistry createRegistry() throws Exception {
+        JndiRegistry registry = super.createRegistry();
+        registry.bind("RackSpace-London", cloud);
+        return registry;
+    }
 
-	@Override
-	protected RouteBuilder createRouteBuilder() throws Exception {
-		return new RouteBuilder() {
-			public void configure() {
-				from(ironMQEndpoint + "&maxMessagesPerPoll=10").to("mock:result");
-			}
-		};
-	}
+    @Test
+    public void testIronMQFifo() throws Exception {
+        result.setExpectedMessageCount(50);
+        assertMockEndpointsSatisfied(30, TimeUnit.SECONDS);
+        int i = 1;
+        List<Exchange> exchanges = result.getExchanges();
+        for (Exchange exchange : exchanges) {
+            assertEquals("<foo>" + i + "</foo>", exchange.getIn().getBody(String.class));
+            i++;
+        }
+    }
+
+    @Override
+    protected RouteBuilder createRouteBuilder() throws Exception {
+        return new RouteBuilder() {
+            public void configure() {
+                from(ironMQEndpoint).log("got message ${body}").to("mock:result");
+            }
+        };
+    }
 }

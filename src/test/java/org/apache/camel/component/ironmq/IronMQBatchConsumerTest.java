@@ -30,56 +30,56 @@ import org.junit.Test;
 
 public class IronMQBatchConsumerTest extends CamelTestSupport {
 
-	private IronMQEndpoint endpoint;
+    private IronMQEndpoint endpoint;
 
-	@Test
-	public void testConsumeBatch() throws Exception {
-		for (int counter = 0; counter < 6; counter++) {
-			Message message = new Message();
-			message.setBody("Message " + counter);
-			message.setId("f6fb6f99-5eb2-4be4-9b15-144774141458"+counter);
-			((MockQueue) endpoint.getQueue()).add(message);
-		}
+    @Test
+    public void testConsumeBatch() throws Exception {
+        for (int counter = 0; counter < 6; counter++) {
+            Message message = new Message();
+            message.setBody("Message " + counter);
+            message.setId("f6fb6f99-5eb2-4be4-9b15-144774141458" + counter);
+            ((MockQueue)endpoint.getQueue()).add(message);
+        }
 
-		MockEndpoint mock = getMockEndpoint("mock:result");
-		mock.expectedMessageCount(5);
-		assertMockEndpointsSatisfied();
+        MockEndpoint mock = getMockEndpoint("mock:result");
+        mock.expectedMessageCount(5);
+        assertMockEndpointsSatisfied();
 
-		mock.message(0).property(Exchange.BATCH_INDEX).isEqualTo(0);
-		mock.message(1).property(Exchange.BATCH_INDEX).isEqualTo(1);
-		mock.message(2).property(Exchange.BATCH_INDEX).isEqualTo(2);
-		mock.message(3).property(Exchange.BATCH_INDEX).isEqualTo(3);
-		mock.message(4).property(Exchange.BATCH_INDEX).isEqualTo(4);
-		mock.message(0).property(Exchange.BATCH_COMPLETE).isEqualTo(false);
-		mock.message(1).property(Exchange.BATCH_COMPLETE).isEqualTo(false);
-		mock.message(2).property(Exchange.BATCH_COMPLETE).isEqualTo(false);
-		mock.message(3).property(Exchange.BATCH_COMPLETE).isEqualTo(false);
-		mock.message(3).property(Exchange.BATCH_COMPLETE).isEqualTo(false);
-		mock.message(4).property(Exchange.BATCH_COMPLETE).isEqualTo(true);
-		mock.expectedPropertyReceived(Exchange.BATCH_SIZE, 5);
-	}
+        mock.message(0).property(Exchange.BATCH_INDEX).isEqualTo(0);
+        mock.message(1).property(Exchange.BATCH_INDEX).isEqualTo(1);
+        mock.message(2).property(Exchange.BATCH_INDEX).isEqualTo(2);
+        mock.message(3).property(Exchange.BATCH_INDEX).isEqualTo(3);
+        mock.message(4).property(Exchange.BATCH_INDEX).isEqualTo(4);
+        mock.message(0).property(Exchange.BATCH_COMPLETE).isEqualTo(false);
+        mock.message(1).property(Exchange.BATCH_COMPLETE).isEqualTo(false);
+        mock.message(2).property(Exchange.BATCH_COMPLETE).isEqualTo(false);
+        mock.message(3).property(Exchange.BATCH_COMPLETE).isEqualTo(false);
+        mock.message(3).property(Exchange.BATCH_COMPLETE).isEqualTo(false);
+        mock.message(4).property(Exchange.BATCH_COMPLETE).isEqualTo(true);
+        mock.expectedPropertyReceived(Exchange.BATCH_SIZE, 5);
+    }
 
-	@Override
-	protected CamelContext createCamelContext() throws Exception {
+    @Override
+    protected CamelContext createCamelContext() throws Exception {
 
-		CamelContext context = super.createCamelContext();
-		IronMQComponent component = new IronMQComponent(context);
-		Map<String, Object> parameters = new HashMap<String, Object>();
-		parameters.put("projectId", "dummy");
-		parameters.put("token", "dummy");
-		parameters.put("maxMessagesPerPoll", "5");
-		endpoint = (IronMQEndpoint) component.createEndpoint("ironmq", "testqueue", parameters);
-		endpoint.setClient(new IronMQClientMock("dummy", "dummy"));
-		context.addComponent("ironmq", component);
-		return context;
-	}
+        CamelContext context = super.createCamelContext();
+        IronMQComponent component = new IronMQComponent(context);
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("projectId", "dummy");
+        parameters.put("token", "dummy");
+        parameters.put("maxMessagesPerPoll", "5");
+        endpoint = (IronMQEndpoint)component.createEndpoint("ironmq", "testqueue", parameters);
+        endpoint.setClient(new IronMQClientMock("dummy", "dummy"));
+        context.addComponent("ironmq", component);
+        return context;
+    }
 
-	@Override
-	protected RouteBuilder createRouteBuilder() throws Exception {
-		return new RouteBuilder() {
-			public void configure() {
-				from(endpoint).to("mock:result");
-			}
-		};
-	}
+    @Override
+    protected RouteBuilder createRouteBuilder() throws Exception {
+        return new RouteBuilder() {
+            public void configure() {
+                from(endpoint).to("mock:result");
+            }
+        };
+    }
 }
