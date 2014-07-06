@@ -24,7 +24,8 @@ public class LoadTest extends CamelTestSupport {
     // ironmq cloud to run test on
     private Cloud cloud = Cloud.ironAWSEUWest;
     private final static String CLOUD_KEY = "iron-cloud";
-    private final String ironMQEndpoint = "ironmq:testqueue?projectId=" + projectId + "&token=" + token + "&maxMessagesPerPoll=100&delay=3000&ironMQCloud=#" + CLOUD_KEY;
+    private final String ironMQEndpoint = "ironmq:testqueue?preserveHeaders=true&projectId=" + projectId + "&token=" + token + "&maxMessagesPerPoll=100&delay=3000&ironMQCloud=#"
+                                          + CLOUD_KEY;
     private final String datasetEndpoint = "dataset:foo?produceDelay=5";
     protected InputDataset dataSet = new InputDataset(1000);
 

@@ -39,7 +39,12 @@ public class IronMQProducer extends DefaultProducer {
         if (IronMQConstants.CLEARQUEUE.equals(exchange.getIn().getHeader(IronMQConstants.OPERATION, String.class))) {
             endpoint.getQueue().clear();
         } else {
-            String body = GsonUtil.getBodyFromMessage(exchange.getIn());
+            String body = null;
+            if (configuration.isPreserveHeaders()) {
+                body = GsonUtil.getBodyFromMessage(exchange.getIn());
+            } else {
+                body = exchange.getIn().getBody(String.class);
+            }
             LOG.trace("Sending request [{}] from exchange [{}]...", body, exchange);
             String id = endpoint.getQueue().push(body, configuration.getTimeout(), configuration.getVisibilityDelay(), configuration.getExpiresIn());
             LOG.trace("Received id [{}]", id);

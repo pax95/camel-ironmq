@@ -37,6 +37,7 @@ public class IronMQComponentConfigurationTest extends CamelTestSupport {
         assertEquals(1, endpoint.getConfiguration().getMaxMessagesPerPoll());
         assertEquals(60, endpoint.getConfiguration().getTimeout());
         assertEquals(604800, endpoint.getConfiguration().getExpiresIn());
+        assertFalse(endpoint.getConfiguration().isPreserveHeaders());
     }
 
     @Test
@@ -60,7 +61,7 @@ public class IronMQComponentConfigurationTest extends CamelTestSupport {
     public void createEndpointWithMaximalConfiguration() throws Exception {
         IronMQComponent component = new IronMQComponent(context);
         IronMQEndpoint endpoint = (IronMQEndpoint)component
-            .createEndpoint("ironmq://TestQueue?projectId=xxx&token=yyy&timeout=120&visibilityDelay=5&expiresIn=400000&maxMessagesPerPoll=20");
+            .createEndpoint("ironmq://TestQueue?projectId=xxx&token=yyy&timeout=120&visibilityDelay=5&expiresIn=400000&maxMessagesPerPoll=20&preserveHeaders=true");
         assertEquals("TestQueue", endpoint.getConfiguration().getQueueName());
         assertEquals("xxx", endpoint.getConfiguration().getProjectId());
         assertEquals("yyy", endpoint.getConfiguration().getToken());
@@ -68,6 +69,7 @@ public class IronMQComponentConfigurationTest extends CamelTestSupport {
         assertEquals(120, endpoint.getConfiguration().getTimeout());
         assertEquals(5, endpoint.getConfiguration().getVisibilityDelay());
         assertEquals(400000, endpoint.getConfiguration().getExpiresIn());
+        assertTrue(endpoint.getConfiguration().isPreserveHeaders());
     }
 
     @Test

@@ -27,10 +27,12 @@ import org.apache.camel.Processor;
 import org.apache.camel.Producer;
 import org.apache.camel.impl.DefaultExchange;
 import org.apache.camel.impl.ScheduledPollEndpoint;
+import org.apache.camel.spi.UriEndpoint;
 
 /**
  * Represents a IronMQ endpoint.
  */
+@UriEndpoint(scheme = "ironmq", consumerClass = IronMQConsumer.class)
 public class IronMQEndpoint extends ScheduledPollEndpoint {
     private Client client;
     private IronMQConfiguration configuration;
@@ -59,7 +61,11 @@ public class IronMQEndpoint extends ScheduledPollEndpoint {
     private Exchange createExchange(ExchangePattern pattern, io.iron.ironmq.Message msg) {
         Exchange exchange = new DefaultExchange(this, pattern);
         Message message = exchange.getIn();
-        GsonUtil.copyFrom(msg, message);
+        if (configuration.isPreserveHeaders()) {
+            GsonUtil.copyFrom(msg, message);
+        } else {
+            message.setBody(msg.getBody());
+        }
         message.setHeader(IronMQConstants.MESSAGE_ID, msg.getId());
         return exchange;
     }

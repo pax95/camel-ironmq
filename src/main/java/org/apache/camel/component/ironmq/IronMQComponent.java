@@ -20,20 +20,20 @@ import java.util.Map;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.Endpoint;
-import org.apache.camel.impl.DefaultComponent;
 import org.apache.camel.impl.ScheduledPollEndpoint;
+import org.apache.camel.impl.UriEndpointComponent;
 
 /**
  * Represents the component that manages {@link IronMQEndpoint}.
  */
-public class IronMQComponent extends DefaultComponent {
+public class IronMQComponent extends UriEndpointComponent {
 
     public IronMQComponent(CamelContext context) {
-        super(context);
+        super(context, IronMQEndpoint.class);
     }
 
     public IronMQComponent() {
-        super();
+        super(IronMQEndpoint.class);
     }
 
     protected Endpoint createEndpoint(String uri, String remaining, Map<String, Object> parameters) throws Exception {

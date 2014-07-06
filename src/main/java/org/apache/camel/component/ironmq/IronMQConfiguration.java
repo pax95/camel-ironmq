@@ -4,7 +4,9 @@ import io.iron.ironmq.Client;
 import io.iron.ironmq.Cloud;
 
 import org.apache.camel.spi.UriParam;
+import org.apache.camel.spi.UriParams;
 
+@UriParams
 public class IronMQConfiguration {
     // consumer and producer
     private Client client;
@@ -24,6 +26,8 @@ public class IronMQConfiguration {
     private int expiresIn = 604800;
     @UriParam
     private int visibilityDelay = 0;
+    @UriParam
+    private boolean preserveHeaders = false;
 
     public Client getClient() {
         return client;
@@ -95,5 +99,13 @@ public class IronMQConfiguration {
 
     public void setVisibilityDelay(int visibilityDelay) {
         this.visibilityDelay = visibilityDelay;
+    }
+
+    public boolean isPreserveHeaders() {
+        return preserveHeaders;
+    }
+
+    public void setPreserveHeaders(boolean preserveHeaders) {
+        this.preserveHeaders = preserveHeaders;
     }
 }
