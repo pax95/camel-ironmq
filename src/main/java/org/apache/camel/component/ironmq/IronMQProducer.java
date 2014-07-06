@@ -35,12 +35,12 @@ public class IronMQProducer extends DefaultProducer {
     }
 
     public void process(Exchange exchange) throws Exception {
-        String body = exchange.getIn().getBody(String.class);
-        LOG.trace("Sending request [{}] from exchange [{}]...", body, exchange);
         IronMQConfiguration configuration = endpoint.getConfiguration();
-        if (IronMQConstants.CLEARQUEUE.equals(exchange.getIn().getHeader(IronMQConstants.OPERATION))) {
+        if (IronMQConstants.CLEARQUEUE.equals(exchange.getIn().getHeader(IronMQConstants.OPERATION, String.class))) {
             endpoint.getQueue().clear();
         } else {
+            String body = GsonUtil.getBodyFromMessage(exchange.getIn());
+            LOG.trace("Sending request [{}] from exchange [{}]...", body, exchange);
             String id = endpoint.getQueue().push(body, configuration.getTimeout(), configuration.getVisibilityDelay(), configuration.getExpiresIn());
             LOG.trace("Received id [{}]", id);
             Message message = getMessageForResponse(exchange);

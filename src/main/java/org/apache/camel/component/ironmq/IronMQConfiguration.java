@@ -3,24 +3,26 @@ package org.apache.camel.component.ironmq;
 import io.iron.ironmq.Client;
 import io.iron.ironmq.Cloud;
 
+import org.apache.camel.spi.UriParam;
+
 public class IronMQConfiguration {
     // consumer and producer
     private Client client;
-    // consumer and producer
+    @UriParam
     private String projectId;
-    // consumer and producer
+    @UriParam
     private String token;
-    // consumer and producer
+    @UriParam
     private String queueName;
-    // consumer and producer
+    @UriParam
     private Cloud ironMQCloud = Cloud.ironAWSUSEast;
-    // consumer and producer
+    @UriParam
     private int timeout = 60;
-    // consumer
+    @UriParam
     private int maxMessagesPerPoll = 1;
-    // producer expires_in
+    @UriParam
     private int expiresIn = 604800;
-    // producer delay
+    @UriParam
     private int visibilityDelay = 0;
 
     public Client getClient() {

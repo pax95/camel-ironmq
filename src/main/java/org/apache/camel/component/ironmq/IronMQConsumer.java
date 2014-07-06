@@ -28,6 +28,7 @@ import org.apache.camel.Processor;
 import org.apache.camel.impl.ScheduledBatchPollingConsumer;
 import org.apache.camel.spi.Synchronization;
 import org.apache.camel.util.CastUtils;
+import org.apache.camel.util.ExchangeHelper;
 import org.apache.camel.util.ObjectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,7 +86,7 @@ public class IronMQConsumer extends ScheduledBatchPollingConsumer {
 
         for (int index = 0; index < total && isBatchAllowed(); index++) {
             // only loop if we are started (allowed to run)
-            Exchange exchange = ObjectHelper.cast(Exchange.class, exchanges.poll());
+            final Exchange exchange = ObjectHelper.cast(Exchange.class, exchanges.poll());
             // add current index and total as properties
             exchange.setProperty(Exchange.BATCH_INDEX, index);
             exchange.setProperty(Exchange.BATCH_SIZE, total);
@@ -124,13 +125,14 @@ public class IronMQConsumer extends ScheduledBatchPollingConsumer {
      * @param exchange the exchange
      */
     protected void processCommit(Exchange exchange) {
+        String messageid = null;
         try {
-            String messageid = exchange.getIn().getHeader(IronMQConstants.MESSAGE_ID, String.class);
+            messageid = ExchangeHelper.getMandatoryHeader(exchange, IronMQConstants.MESSAGE_ID, String.class);
             LOG.trace("Deleting message with id {}...", messageid);
             endpoint.getQueue().deleteMessage(messageid);
             LOG.trace("Message deleted");
         } catch (Exception e) {
-            getExceptionHandler().handleException("Error occurred during deleting object. This exception is ignored.", exchange, e);
+            getExceptionHandler().handleException("Error occurred during delete of object with messageid : " + messageid + ". This exception is ignored.", exchange, e);
         }
     }
 
