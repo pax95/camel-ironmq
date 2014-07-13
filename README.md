@@ -11,63 +11,18 @@ Uri format:
 
 URI options:
 ============
-<table>
-  <tr>
-    <th>Name</th>
-    <th>Default value</th>
-    <th>Context</th>
-    <th>Description</th>
-  </tr>
-  <tr>
-    <th>client</th>
-    <td>null</td>
-    <td>Shared</td>
-    <td>Reference to a io.iron.ironmq.Client in the Registry.</td>
-  </tr>
-  <tr>
-    <th>projectId</th>
-    <td>null</td>
-    <td>Shared</td>
-    <td>IronMQ projectid</td>
-  </tr>
-  <tr>
-    <th>token</th>
-    <td>null</td>
-    <td>Shared</td>
-    <td>IronMQ token</td>
-  </tr>
-  <tr>
-    <th>ironMQCloud</th>
-    <td>ironAWSUSEast</td>
-    <td>Shared</td>
-    <td>Reference to a io.iron.ironmq.Cloud in the registry. See [IronIo documents](http://dev.iron.io/mq/reference/clouds/) for valid options</td>
-  </tr>
-  <tr>
-    <th>timeout</th>
-    <td>60</td>
-    <td>Shared</td>
-    <td>After timeout (in seconds), item will be placed back onto the queue</td>
-  </tr>
-  <tr>
-    <th>maxMessagesPerPoll</th>
-    <td>1</td>
-    <td>Consumer</td>
-    <td>How many messages pr. poll</td>
-  </tr>
-  <tr>
-    <th>expiresIn</th>
-    <td>604800</td>
-    <td>Producer</td>
-    <td> How long in seconds to keep the item on the queue before it is deleted. Default is 604,800 seconds (7 days). Maximum is 2,592,000 seconds (30 days).</td>
-  </tr>
-    <tr>
-    <th>visibilityDelay</th>
-    <td>0</td>
-    <td>Producer</td>
-    <td>The item will not be available on the queue until this many seconds have passed. Default is 0 seconds.</td>
-  </tr>
 
-</table>
+Name				| Default value | Context 	| Description
+------      		| ------------- | ------- 	| -----------
+client      		| null          | Shared  	| Reference to a io.iron.ironmq.Client in the Registry.
+projectId   		| null          | Shared  	| IronMQ projectid
+token       		| null          | Shared  	| IronMQ token
+ironMQCloud 		| ironAWSUSEast | Shared  	| Reference to a io.iron.ironmq.Cloud in the registry. See [IronIo documents](http://dev.iron.io/mq/reference/clouds/) for valid options
+preserveHeaders		| false			| Shared	| Should Camel headers be preserved. This will add the Camel headers to the Iron MQ message body as a json payload with a header list, and a message body. This is useful when Camel is both consumer and producer.
+timeout      		| 60			| Consumer	| After timeout (in seconds), item will be placed back onto the queue
+maxMessagesPerPoll	| 1				| Consumer	| How many messages pr. poll.
+expiresIn			| 604800		| Producer	| How long in seconds to keep the item on the queue before it is deleted. Default is 604,800 seconds (7 days). Maximum is 2,592,000 seconds (30 days).
+visibilityDelay		| 0				| Producer	| The item will not be available on the queue until this many seconds have passed. Default is 0 seconds.
 
 Consumer example
 ========
