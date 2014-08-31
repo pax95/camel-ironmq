@@ -5,6 +5,9 @@ Ironmq component for Camel supports integration with [IronMQ](http://www.iron.io
 
 To run it requires a IronMQ acount with projectId and token.
 
+###Status
+![Build Status](https://travis-ci.org/pax95/camel-ironmq.svg?branch=master)
+
 Uri format:
 ===========
 	ironmq://queue-name[?options]
