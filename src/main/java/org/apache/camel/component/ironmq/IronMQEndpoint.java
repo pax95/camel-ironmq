@@ -28,6 +28,7 @@ import org.apache.camel.Producer;
 import org.apache.camel.impl.DefaultExchange;
 import org.apache.camel.impl.ScheduledPollEndpoint;
 import org.apache.camel.spi.UriEndpoint;
+import org.apache.camel.spi.UriParam;
 
 /**
  * Represents a IronMQ endpoint.
@@ -35,6 +36,7 @@ import org.apache.camel.spi.UriEndpoint;
 @UriEndpoint(scheme = "ironmq", consumerClass = IronMQConsumer.class)
 public class IronMQEndpoint extends ScheduledPollEndpoint {
     private Client client;
+    @UriParam
     private IronMQConfiguration configuration;
     private Queue queue;
 
