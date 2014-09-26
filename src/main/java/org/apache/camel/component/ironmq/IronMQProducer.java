@@ -46,7 +46,7 @@ public class IronMQProducer extends DefaultProducer {
                 body = exchange.getIn().getBody(String.class);
             }
             LOG.trace("Sending request [{}] from exchange [{}]...", body, exchange);
-            String id = endpoint.getQueue().push(body, configuration.getTimeout(), configuration.getVisibilityDelay(), configuration.getExpiresIn());
+            String id = endpoint.getQueue().push(body, configuration.getVisibilityDelay(), configuration.getExpiresIn());
             LOG.trace("Received id [{}]", id);
             Message message = getMessageForResponse(exchange);
             message.setHeader(IronMQConstants.MESSAGE_ID, id);

@@ -16,10 +16,6 @@
  */
 package org.apache.camel.component.ironmq;
 
-import io.iron.ironmq.Cloud;
-
-import org.apache.camel.impl.JndiRegistry;
-import org.apache.camel.impl.PropertyPlaceholderDelegateRegistry;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Test;
 
@@ -43,9 +39,8 @@ public class IronMQComponentConfigurationTest extends CamelTestSupport {
     @Test
     public void createEndpointWithMinimalConfigurationAndIronMQCloud() throws Exception {
         IronMQComponent component = new IronMQComponent(context);
-        ((JndiRegistry)((PropertyPlaceholderDelegateRegistry)context.getRegistry()).getRegistry()).bind("myCloudOverride", Cloud.ironAWSEUWest);
 
-        IronMQEndpoint endpoint = (IronMQEndpoint)component.createEndpoint("ironmq://TestQueue?projectId=xxx&token=yyy&ironMQCloud=#myCloudOverride");
+        IronMQEndpoint endpoint = (IronMQEndpoint)component.createEndpoint("ironmq://TestQueue?projectId=xxx&token=yyy&ironMQCloud=https://iron.foo");
 
         assertEquals("TestQueue", endpoint.getConfiguration().getQueueName());
         assertEquals("xxx", endpoint.getConfiguration().getProjectId());
@@ -54,7 +49,7 @@ public class IronMQComponentConfigurationTest extends CamelTestSupport {
         assertEquals(1, endpoint.getConfiguration().getMaxMessagesPerPoll());
         assertEquals(60, endpoint.getConfiguration().getTimeout());
         assertEquals(604800, endpoint.getConfiguration().getExpiresIn());
-        assertEquals(Cloud.ironAWSEUWest.getHost(), endpoint.getConfiguration().getIronMQCloud().getHost());
+        assertEquals("https://iron.foo", endpoint.getConfiguration().getIronMQCloud());
     }
 
     @Test

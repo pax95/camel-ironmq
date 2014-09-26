@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * The IronMQ consumer.
  */
 public class IronMQConsumer extends ScheduledBatchPollingConsumer {
-    private static final transient Logger LOG = LoggerFactory.getLogger(IronMQConsumer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(IronMQConsumer.class);
     private final IronMQEndpoint endpoint;
 
     public IronMQConsumer(IronMQEndpoint endpoint, Processor processor) {
@@ -53,10 +53,10 @@ public class IronMQConsumer extends ScheduledBatchPollingConsumer {
         try {
             Messages messages = null;
             if (endpoint.getConfiguration().getTimeout() > 0) {
-                messages = endpoint.getQueue().get(getMaxMessagesPerPoll(), endpoint.getConfiguration().getTimeout());
+                messages = endpoint.getQueue().reserve(getMaxMessagesPerPoll(), endpoint.getConfiguration().getTimeout());
                 LOG.trace("Receiving messages with request [messagePerPoll{}, timeout {}]...", getMaxMessagesPerPoll(), endpoint.getConfiguration().getTimeout());
             } else {
-                messages = endpoint.getQueue().get(getMaxMessagesPerPoll());
+                messages = endpoint.getQueue().reserve(getMaxMessagesPerPoll());
                 LOG.trace("Receiving messages with request [messagePerPoll {}]...", getMaxMessagesPerPoll());
             }
 

@@ -25,13 +25,12 @@ public class MockQueue extends Queue {
     }
 
     @Override
-    public String push(String msg, long timeout, long delay, long expiresIn) throws IOException {
+    public String push(String msg, long delay, long expiresIn) throws IOException {
         String randint = new BigInteger(24 * 8, new Random()).toString(16);
         Message message = new Message();
         message.setBody(msg);
         message.setDelay(delay);
         message.setExpiresIn(expiresIn);
-        message.setTimeout(timeout);
         message.setId(randint);
         messages.put(randint, message);
         return randint;
@@ -46,7 +45,7 @@ public class MockQueue extends Queue {
     }
 
     @Override
-    public Message get() throws IOException {
+    public Message reserve() throws IOException {
         if (messages.size() > 0) {
             Entry<String, Message> next = messages.entrySet().iterator().next();
             return next.getValue();
@@ -55,12 +54,12 @@ public class MockQueue extends Queue {
     }
 
     @Override
-    public Messages get(int numberOfMessages) throws IOException {
-        return get(numberOfMessages, 120);
+    public Messages reserve(int numberOfMessages) throws IOException {
+        return reserve(numberOfMessages, 120);
     }
 
     @Override
-    public Messages get(int numberOfMessages, int timeout) throws IOException {
+    public Messages reserve(int numberOfMessages, int timeout) throws IOException {
         if (messages.size() > 0) {
 
             Iterator<Entry<String, Message>> iterator = messages.entrySet().iterator();

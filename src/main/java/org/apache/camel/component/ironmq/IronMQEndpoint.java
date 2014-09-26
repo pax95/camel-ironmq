@@ -17,7 +17,10 @@
 package org.apache.camel.component.ironmq;
 
 import io.iron.ironmq.Client;
+import io.iron.ironmq.Cloud;
 import io.iron.ironmq.Queue;
+
+import java.net.MalformedURLException;
 
 import org.apache.camel.Consumer;
 import org.apache.camel.Exchange;
@@ -29,12 +32,16 @@ import org.apache.camel.impl.DefaultExchange;
 import org.apache.camel.impl.ScheduledPollEndpoint;
 import org.apache.camel.spi.UriEndpoint;
 import org.apache.camel.spi.UriParam;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents a IronMQ endpoint.
  */
 @UriEndpoint(scheme = "ironmq", consumerClass = IronMQConsumer.class)
 public class IronMQEndpoint extends ScheduledPollEndpoint {
+    private static final Logger LOG = LoggerFactory.getLogger(IronMQEndpoint.class);
+
     private Client client;
     @UriParam
     private IronMQConfiguration configuration;
@@ -112,7 +119,14 @@ public class IronMQEndpoint extends ScheduledPollEndpoint {
      * @return Client
      */
     Client createClient() {
-        client = new Client(configuration.getProjectId(), configuration.getToken(), configuration.getIronMQCloud());
+        Cloud cloud;
+        try {
+            cloud = new Cloud(configuration.getIronMQCloud());
+        } catch (MalformedURLException e) {
+            cloud = Cloud.ironAWSUSEast;
+            LOG.warn("Unable to parse ironMQCloud {} will use {}", configuration.getIronMQCloud(), cloud.getHost());
+        }
+        client = new Client(configuration.getProjectId(), configuration.getToken(), cloud);
         return client;
     }
 

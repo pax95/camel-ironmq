@@ -27,16 +27,10 @@
         </route>
 
         <route>
-            <from uri="ironmq://testqueue?client=#client&amp;maxMessagesPerPoll=20&amp;ironMQCloud=#myIronCloudProvider"/>
+            <from uri="ironmq://testqueue?client=#client&amp;maxMessagesPerPoll=20&amp;ironMQCloud=https://iron.foo"/>
             <to uri="mock:result"/>
         </route>
     </camelContext>
-    
-	<bean id="myIronCloudProvider" class="io.iron.ironmq.Cloud">
-		<constructor-arg name="host" value="mq-rackspace-ord.iron"/>
-		<constructor-arg name="port" value="443"/>
-		<constructor-arg name="scheme" value="https"/>
-	</bean>
     
     <bean id="client" class="org.apache.camel.component.ironmq.IronMQClientMock">
     	<constructor-arg name="projectId" value="foo"/>

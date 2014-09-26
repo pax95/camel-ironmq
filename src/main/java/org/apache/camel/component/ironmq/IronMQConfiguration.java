@@ -1,7 +1,6 @@
 package org.apache.camel.component.ironmq;
 
 import io.iron.ironmq.Client;
-import io.iron.ironmq.Cloud;
 
 import org.apache.camel.spi.UriParam;
 import org.apache.camel.spi.UriParams;
@@ -17,7 +16,7 @@ public class IronMQConfiguration {
     @UriParam
     private String queueName;
     @UriParam
-    private Cloud ironMQCloud = Cloud.ironAWSUSEast;
+    private String ironMQCloud = "https://mq-aws-us-east-1.iron.io";
     @UriParam
     private int timeout = 60;
     @UriParam
@@ -28,6 +27,8 @@ public class IronMQConfiguration {
     private int visibilityDelay = 0;
     @UriParam
     private boolean preserveHeaders = false;
+    @UriParam
+    private boolean batchDelete = false;
 
     public Client getClient() {
         return client;
@@ -61,11 +62,11 @@ public class IronMQConfiguration {
         return queueName;
     }
 
-    public void setIronMQCloud(Cloud ironMQCloud) {
+    public void setIronMQCloud(String ironMQCloud) {
         this.ironMQCloud = ironMQCloud;
     }
 
-    public Cloud getIronMQCloud() {
+    public String getIronMQCloud() {
         return ironMQCloud;
     }
 
@@ -107,5 +108,13 @@ public class IronMQConfiguration {
 
     public void setPreserveHeaders(boolean preserveHeaders) {
         this.preserveHeaders = preserveHeaders;
+    }
+
+    public boolean isBatchDelete() {
+        return batchDelete;
+    }
+
+    public void setBatchDelete(boolean batchDelete) {
+        this.batchDelete = batchDelete;
     }
 }
