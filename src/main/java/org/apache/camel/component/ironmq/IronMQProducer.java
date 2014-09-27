@@ -26,18 +26,16 @@ import org.slf4j.LoggerFactory;
  * The IronMQ producer.
  */
 public class IronMQProducer extends DefaultProducer {
-    private static final transient Logger LOG = LoggerFactory.getLogger(IronMQProducer.class);
-    private IronMQEndpoint endpoint;
+    private static final Logger LOG = LoggerFactory.getLogger(IronMQProducer.class);
 
     public IronMQProducer(IronMQEndpoint endpoint) {
         super(endpoint);
-        this.endpoint = endpoint;
     }
 
     public void process(Exchange exchange) throws Exception {
-        IronMQConfiguration configuration = endpoint.getConfiguration();
+        IronMQConfiguration configuration = getEndpoint().getConfiguration();
         if (IronMQConstants.CLEARQUEUE.equals(exchange.getIn().getHeader(IronMQConstants.OPERATION, String.class))) {
-            endpoint.getQueue().clear();
+            getEndpoint().getQueue().clear();
         } else {
             String body = null;
             if (configuration.isPreserveHeaders()) {
@@ -46,7 +44,7 @@ public class IronMQProducer extends DefaultProducer {
                 body = exchange.getIn().getBody(String.class);
             }
             LOG.trace("Sending request [{}] from exchange [{}]...", body, exchange);
-            String id = endpoint.getQueue().push(body, configuration.getTimeout(), configuration.getVisibilityDelay(), configuration.getExpiresIn());
+            String id = getEndpoint().getQueue().push(body, configuration.getTimeout(), configuration.getVisibilityDelay(), configuration.getExpiresIn());
             LOG.trace("Received id [{}]", id);
             Message message = getMessageForResponse(exchange);
             message.setHeader(IronMQConstants.MESSAGE_ID, id);
@@ -61,6 +59,11 @@ public class IronMQProducer extends DefaultProducer {
         }
 
         return exchange.getIn();
+    }
+
+    @Override
+    public IronMQEndpoint getEndpoint() {
+        return (IronMQEndpoint)super.getEndpoint();
     }
 
 }

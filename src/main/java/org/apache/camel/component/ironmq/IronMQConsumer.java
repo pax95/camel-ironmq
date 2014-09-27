@@ -23,6 +23,7 @@ import io.iron.ironmq.Messages;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import org.apache.camel.Endpoint;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.impl.ScheduledBatchPollingConsumer;
@@ -37,12 +38,10 @@ import org.slf4j.LoggerFactory;
  * The IronMQ consumer.
  */
 public class IronMQConsumer extends ScheduledBatchPollingConsumer {
-    private static final transient Logger LOG = LoggerFactory.getLogger(IronMQConsumer.class);
-    private final IronMQEndpoint endpoint;
+    private static final Logger LOG = LoggerFactory.getLogger(IronMQConsumer.class);
 
-    public IronMQConsumer(IronMQEndpoint endpoint, Processor processor) {
+    public IronMQConsumer(Endpoint endpoint, Processor processor) {
         super(endpoint, processor);
-        this.endpoint = endpoint;
     }
 
     @Override
@@ -52,11 +51,11 @@ public class IronMQConsumer extends ScheduledBatchPollingConsumer {
         pendingExchanges = 0;
         try {
             Messages messages = null;
-            if (endpoint.getConfiguration().getTimeout() > 0) {
-                messages = endpoint.getQueue().get(getMaxMessagesPerPoll(), endpoint.getConfiguration().getTimeout());
-                LOG.trace("Receiving messages with request [messagePerPoll{}, timeout {}]...", getMaxMessagesPerPoll(), endpoint.getConfiguration().getTimeout());
+            if (getEndpoint().getConfiguration().getTimeout() > 0) {
+                messages = getEndpoint().getQueue().get(getMaxMessagesPerPoll(), getEndpoint().getConfiguration().getTimeout());
+                LOG.trace("Receiving messages with request [messagePerPoll{}, timeout {}]...", getMaxMessagesPerPoll(), getEndpoint().getConfiguration().getTimeout());
             } else {
-                messages = endpoint.getQueue().get(getMaxMessagesPerPoll());
+                messages = getEndpoint().getQueue().get(getMaxMessagesPerPoll());
                 LOG.trace("Receiving messages with request [messagePerPoll {}]...", getMaxMessagesPerPoll());
             }
 
@@ -129,7 +128,7 @@ public class IronMQConsumer extends ScheduledBatchPollingConsumer {
         try {
             messageid = ExchangeHelper.getMandatoryHeader(exchange, IronMQConstants.MESSAGE_ID, String.class);
             LOG.trace("Deleting message with id {}...", messageid);
-            endpoint.getQueue().deleteMessage(messageid);
+            getEndpoint().getQueue().deleteMessage(messageid);
             LOG.trace("Message deleted");
         } catch (Exception e) {
             getExceptionHandler().handleException("Error occurred during delete of object with messageid : " + messageid + ". This exception is ignored.", exchange, e);
