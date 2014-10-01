@@ -40,7 +40,7 @@ public class IronMQPreserveHeadersTest extends CamelTestSupport {
         template.sendBodyAndHeader("direct:start", "some payload", "MyHeader", "HeaderValue");
 
         assertMockEndpointsSatisfied();
-        String id = mock.getExchanges().get(0).getIn().getHeader("MESSAGE_ID", String.class);
+        String id = mock.getExchanges().get(0).getIn().getHeader(IronMQConstants.MESSAGE_ID, String.class);
         Assert.assertNotNull(id);
     }
 

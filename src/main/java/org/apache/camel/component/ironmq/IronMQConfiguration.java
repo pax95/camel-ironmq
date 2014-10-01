@@ -29,6 +29,8 @@ public class IronMQConfiguration {
     private boolean preserveHeaders = false;
     @UriParam
     private boolean batchDelete = false;
+    @UriParam
+    private int wait = 0;
 
     public Client getClient() {
         return client;
@@ -116,5 +118,13 @@ public class IronMQConfiguration {
 
     public void setBatchDelete(boolean batchDelete) {
         this.batchDelete = batchDelete;
+    }
+
+    public int getWait() {
+        return wait;
+    }
+
+    public void setWait(int wait) {
+        this.wait = wait;
     }
 }

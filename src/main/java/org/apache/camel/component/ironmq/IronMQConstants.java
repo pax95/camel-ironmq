@@ -2,8 +2,10 @@ package org.apache.camel.component.ironmq;
 
 public interface IronMQConstants {
 
-	String MESSAGE_ID = "MESSAGE_ID";
-	String OPERATION = "Operation";
-	String CLEARQUEUE = "ClearQueue";
+    String MESSAGE_ID = "CamelIronMQMessageId";
+    String MESSAGE_RESERVATION_ID = "CamelIronMQReservationId";
+    String MESSAGE_RESERVED_COUNT = "CamelIronMQReservedCount";
+    String OPERATION = "Operation";
+    String CLEARQUEUE = "ClearQueue";
 
 }

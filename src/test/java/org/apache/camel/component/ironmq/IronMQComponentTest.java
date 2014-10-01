@@ -23,6 +23,7 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
+import org.apache.camel.Message;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
@@ -44,8 +45,10 @@ public class IronMQComponentTest extends CamelTestSupport {
         template.sendBody("direct:start", "some payload");
 
         assertMockEndpointsSatisfied();
-        String id = mock.getExchanges().get(0).getIn().getHeader("MESSAGE_ID", String.class);
-        Assert.assertNotNull(id);
+        Message in = mock.getExchanges().get(0).getIn();
+        Assert.assertNotNull(in.getHeader(IronMQConstants.MESSAGE_ID));
+        Assert.assertNotNull(in.getHeader(IronMQConstants.MESSAGE_RESERVATION_ID));
+        Assert.assertNotNull(in.getHeader(IronMQConstants.MESSAGE_RESERVED_COUNT));
     }
 
     @Test

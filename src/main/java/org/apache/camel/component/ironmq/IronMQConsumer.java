@@ -51,14 +51,9 @@ public class IronMQConsumer extends ScheduledBatchPollingConsumer {
         pendingExchanges = 0;
         try {
             Messages messages = null;
-            if (getEndpoint().getConfiguration().getTimeout() > 0) {
-                messages = getEndpoint().getQueue().reserve(getMaxMessagesPerPoll(), getEndpoint().getConfiguration().getTimeout());
-                LOG.trace("Receiving messages with request [messagePerPoll{}, timeout {}]...", getMaxMessagesPerPoll(), getEndpoint().getConfiguration().getTimeout());
-            } else {
-                messages = getEndpoint().getQueue().reserve(getMaxMessagesPerPoll());
-                LOG.trace("Receiving messages with request [messagePerPoll {}]...", getMaxMessagesPerPoll());
-            }
-
+            LOG.trace("Receiving messages with request [messagePerPoll{}, timeout {}, wait {}]...", getMaxMessagesPerPoll(), getEndpoint().getConfiguration().getTimeout(),
+                      getEndpoint().getConfiguration().getWait());
+            messages = getEndpoint().getQueue().reserve(getMaxMessagesPerPoll(), getEndpoint().getConfiguration().getTimeout(), getEndpoint().getConfiguration().getWait());
             LOG.trace("Received {} messages", messages.getMessages().length);
 
             Queue<Exchange> exchanges = createExchanges(messages.getMessages());

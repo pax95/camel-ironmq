@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
+import java.util.UUID;
 
 public class MockQueue extends Queue {
     Map<String, Message> messages = new HashMap<String, Message>();
@@ -32,6 +33,7 @@ public class MockQueue extends Queue {
         message.setDelay(delay);
         message.setExpiresIn(expiresIn);
         message.setId(randint);
+        message.setReservationId(UUID.randomUUID().toString());
         messages.put(randint, message);
         return randint;
     }
@@ -59,7 +61,7 @@ public class MockQueue extends Queue {
     }
 
     @Override
-    public Messages reserve(int numberOfMessages, int timeout) throws IOException {
+    public Messages reserve(int numberOfMessages, int timeout, int wait) throws IOException {
         if (messages.size() > 0) {
 
             Iterator<Entry<String, Message>> iterator = messages.entrySet().iterator();

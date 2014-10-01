@@ -76,6 +76,8 @@ public class IronMQEndpoint extends ScheduledPollEndpoint {
             message.setBody(msg.getBody());
         }
         message.setHeader(IronMQConstants.MESSAGE_ID, msg.getId());
+        message.setHeader(IronMQConstants.MESSAGE_RESERVATION_ID, msg.getReservationId());
+        message.setHeader(IronMQConstants.MESSAGE_RESERVED_COUNT, msg.getReservedCount());
         return exchange;
     }
 
