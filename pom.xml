@@ -40,7 +40,7 @@
 		<dependency>
 			<groupId>io.iron.ironmq</groupId>
 			<artifactId>ironmq</artifactId>
-			<version>3.0.1-SNAPSHOT</version>
+			<version>3.0.1</version>
 		</dependency>
 		<!-- logging -->
 		<dependency>

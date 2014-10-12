@@ -28,12 +28,12 @@ import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Test;
 
-public class IronMQBatchConsumerTest extends CamelTestSupport {
+public class IronMQBatchDeleteConsumerTest extends CamelTestSupport {
 
     private IronMQEndpoint endpoint;
 
     @Test
-    public void testConsumeBatchDelete() throws Exception {
+    public void testConsumeBatch() throws Exception {
         for (int counter = 0; counter <= 5; counter++) {
             Message message = new Message();
             message.setBody("{\"body\": \"Message " + counter + "\"}");
@@ -71,7 +71,6 @@ public class IronMQBatchConsumerTest extends CamelTestSupport {
         parameters.put("projectId", "dummy");
         parameters.put("token", "dummy");
         parameters.put("maxMessagesPerPoll", "5");
-        parameters.put("batchDelete", "true");
         endpoint = (IronMQEndpoint)component.createEndpoint("ironmq", "testqueue", parameters);
         endpoint.setClient(new IronMQClientMock("dummy", "dummy"));
         context.addComponent("ironmq", component);

@@ -57,7 +57,12 @@ public class IronMQConsumer extends ScheduledBatchPollingConsumer {
             LOG.trace("Received {} messages", messages.getMessages().length);
 
             Queue<Exchange> exchanges = createExchanges(messages.getMessages());
-            return processBatch(CastUtils.cast(exchanges));
+            int noProcessed = processBatch(CastUtils.cast(exchanges));
+            // delete all processed messages in one batch;
+            if (getEndpoint().getConfiguration().isBatchDelete()) {
+                getEndpoint().getQueue().deleteMessages(messages);
+            }
+            return noProcessed;
         } catch (EmptyQueueException e) {
             return 0;
         }
@@ -90,20 +95,23 @@ public class IronMQConsumer extends ScheduledBatchPollingConsumer {
             pendingExchanges = total - index - 1;
 
             // add on completion to handle after work when the exchange is done
-            exchange.addOnCompletion(new Synchronization() {
-                public void onComplete(Exchange exchange) {
-                    processCommit(exchange);
-                }
+            // if batchDelete is not enabled
+            if (!getEndpoint().getConfiguration().isBatchDelete()) {
+                exchange.addOnCompletion(new Synchronization() {
+                    public void onComplete(Exchange exchange) {
+                        processCommit(exchange);
+                    }
 
-                public void onFailure(Exchange exchange) {
-                    processRollback(exchange);
-                }
+                    public void onFailure(Exchange exchange) {
+                        processRollback(exchange);
+                    }
 
-                @Override
-                public String toString() {
-                    return "IronMQConsumerOnCompletion";
-                }
-            });
+                    @Override
+                    public String toString() {
+                        return "IronMQConsumerOnCompletion";
+                    }
+                });
+            }
 
             LOG.trace("Processing exchange [{}]...", exchange);
 

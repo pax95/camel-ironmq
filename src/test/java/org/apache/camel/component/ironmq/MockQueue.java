@@ -4,14 +4,15 @@ import io.iron.ironmq.Client;
 import io.iron.ironmq.EmptyQueueException;
 import io.iron.ironmq.HTTPException;
 import io.iron.ironmq.Message;
+import io.iron.ironmq.MessageOptions;
 import io.iron.ironmq.Messages;
 import io.iron.ironmq.Queue;
 
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -19,7 +20,7 @@ import java.util.Random;
 import java.util.UUID;
 
 public class MockQueue extends Queue {
-    Map<String, Message> messages = new HashMap<String, Message>();
+    Map<String, Message> messages = new LinkedHashMap<String, Message>();
 
     public MockQueue(Client client, String name) {
         super(client, name);
@@ -44,6 +45,22 @@ public class MockQueue extends Queue {
             messages.remove(id);
         } else
             throw new HTTPException(404, "not found");
+    }
+
+    @Override
+    public void deleteMessages(Messages messages) throws IOException {
+        MessageOptions[] messageOptions = messages.toMessageOptions();
+        for (int i = 0; i < messageOptions.length; i++) {
+            deleteMessage(messageOptions[i].getId());
+        }
+    }
+
+    @Override
+    public Message peek() throws IOException {
+        if (messages.size() > 0) {
+            return messages.entrySet().iterator().next().getValue();
+        }
+        throw new EmptyQueueException();
     }
 
     @Override
