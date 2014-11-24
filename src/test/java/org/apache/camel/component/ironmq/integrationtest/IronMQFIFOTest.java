@@ -16,8 +16,6 @@
  */
 package org.apache.camel.component.ironmq.integrationtest;
 
-import io.iron.ironmq.Cloud;
-
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -27,19 +25,17 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.ironmq.IronMQConstants;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.apache.camel.impl.JndiRegistry;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-@Ignore("Must be manually tested. Provide your own projectId and token!")
+@Ignore("Integration test that requires ironmq account.")
 public class IronMQFIFOTest extends CamelTestSupport {
-    private String projectId = "myIronMQproject";
-    private String token = "myIronMQToken";
-    private Cloud cloud = Cloud.ironRackspaceLON;
+    private String projectId = "replace-this";
+    private String token = "replace-this";
 
-    private final String ironMQEndpoint = "ironmq:testqueue?projectId=" + projectId + "&token=" + token + "&maxMessagesPerPoll=20&ironMQCloud=#RackSpace-London";
+    private final String ironMQEndpoint = "ironmq:testqueue?projectId=" + projectId + "&token=" + token + "&maxMessagesPerPoll=20&ironMQCloud=http://mq-v3-aws-us-east-1.iron.io";
 
     @EndpointInject(uri = "direct:start")
     private ProducerTemplate template;
@@ -53,13 +49,6 @@ public class IronMQFIFOTest extends CamelTestSupport {
         for (int i = 1; i <= 50; i++) {
             template.sendBody(ironMQEndpoint, "<foo>" + i + "</foo>");
         }
-    }
-
-    @Override
-    protected JndiRegistry createRegistry() throws Exception {
-        JndiRegistry registry = super.createRegistry();
-        registry.bind("RackSpace-London", cloud);
-        return registry;
     }
 
     @Test

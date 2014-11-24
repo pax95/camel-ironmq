@@ -127,14 +127,14 @@ public class IronMQConsumer extends ScheduledBatchPollingConsumer {
      * @param exchange the exchange
      */
     protected void processCommit(Exchange exchange) {
-        String messageid = null;
         try {
-            messageid = ExchangeHelper.getMandatoryHeader(exchange, IronMQConstants.MESSAGE_ID, String.class);
-            LOG.trace("Deleting message with id {}...", messageid);
-            getEndpoint().getQueue().deleteMessage(messageid);
+            String messageid = ExchangeHelper.getMandatoryHeader(exchange, IronMQConstants.MESSAGE_ID, String.class);
+            String reservationId = ExchangeHelper.getMandatoryHeader(exchange, IronMQConstants.MESSAGE_RESERVATION_ID, String.class);
+            LOG.trace("Deleting message with messageId {} and reservationId {}...", messageid, reservationId);
+            getEndpoint().getQueue().deleteMessage(messageid, reservationId);
             LOG.trace("Message deleted");
         } catch (Exception e) {
-            getExceptionHandler().handleException("Error occurred during delete of object with messageid : " + messageid + ". This exception is ignored.", exchange, e);
+            getExceptionHandler().handleException("Error occurred during delete of message. This exception is ignored.", exchange, e);
         }
     }
 

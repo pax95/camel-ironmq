@@ -40,7 +40,7 @@ public class MockQueue extends Queue {
     }
 
     @Override
-    public void deleteMessage(String id) throws IOException {
+    public void deleteMessage(String id, String reservationId) throws IOException {
         if (messages.containsKey(id)) {
             messages.remove(id);
         } else
@@ -51,7 +51,7 @@ public class MockQueue extends Queue {
     public void deleteMessages(Messages messages) throws IOException {
         MessageOptions[] messageOptions = messages.toMessageOptions();
         for (int i = 0; i < messageOptions.length; i++) {
-            deleteMessage(messageOptions[i].getId());
+            deleteMessage(messageOptions[i].getId(), messageOptions[i].getReservationId());
         }
     }
 

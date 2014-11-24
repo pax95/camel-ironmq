@@ -1,7 +1,5 @@
 package org.apache.camel.component.ironmq.integrationtest;
 
-import io.iron.ironmq.Cloud;
-
 import java.util.concurrent.TimeUnit;
 
 import javax.naming.Context;
@@ -21,11 +19,9 @@ public class LoadTest extends CamelTestSupport {
     private String projectId = "replace-this";
     // replace with your token
     private String token = "replace-this";
-    // ironmq cloud to run test on
-    private Cloud cloud = Cloud.ironAWSEUWest;
-    private final static String CLOUD_KEY = "iron-cloud";
-    private final String ironMQEndpoint = "ironmq:testqueue?preserveHeaders=true&timeout=120&projectId=" + projectId + "&token=" + token
-                                          + "&maxMessagesPerPoll=100&delay=3000&ironMQCloud=#" + CLOUD_KEY;
+    private final static String IRONMQ_CLOUD = "http://mq-v3-aws-us-east-1.iron.io";
+    private final String ironMQEndpoint = "ironmq:testqueue?preserveHeaders=true&projectId=" + projectId + "&token=" + token
+                                          + "&maxMessagesPerPoll=100&delay=3000&wait=30&ironMQCloud=" + IRONMQ_CLOUD;
     private final String datasetEndpoint = "dataset:foo?produceDelay=5";
     protected InputDataset dataSet = new InputDataset(1000);
 
@@ -47,7 +43,6 @@ public class LoadTest extends CamelTestSupport {
     protected Context createJndiContext() throws Exception {
         Context context = super.createJndiContext();
         context.bind("foo", dataSet);
-        context.bind(CLOUD_KEY, cloud);
         return context;
     }
 
