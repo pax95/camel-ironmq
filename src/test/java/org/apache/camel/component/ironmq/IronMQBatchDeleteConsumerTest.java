@@ -20,6 +20,7 @@ import io.iron.ironmq.Message;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
@@ -44,7 +45,7 @@ public class IronMQBatchDeleteConsumerTest extends CamelTestSupport {
 
         MockEndpoint mock = getMockEndpoint("mock:result");
         mock.expectedMessageCount(5);
-        assertMockEndpointsSatisfied();
+        assertMockEndpointsSatisfied(30, TimeUnit.SECONDS);
 
         mock.message(0).property(Exchange.BATCH_INDEX).isEqualTo(0);
         mock.message(1).property(Exchange.BATCH_INDEX).isEqualTo(1);
