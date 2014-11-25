@@ -29,6 +29,23 @@ wait | 0 | Consumer | Time in seconds to wait for a message to become available.
 expiresIn			| 604800		| Producer	| How long in seconds to keep the item on the queue before it is deleted. Default is 604,800 seconds (7 days). Maximum is 2,592,000 seconds (30 days).
 visibilityDelay		| 0				| Producer	| The item will not be available on the queue until this many seconds have passed. Default is 0 seconds.
 
+Message headers evaluated by the IronMQ producer
+================================================
+
+Header                  |Type  | Description
+------------------------|------|--------------
+CamelIronMQOperation    |String|If value set to 'CamelIronMQClearQueue' the queue is cleared of unconsumed  messages. 
+
+Message headers set by the IronMQ consumer
+=======================================
+
+Header                  |Type  | Description
+------------------------|------|--------------
+CamelIronMQMessageId    |String|The id of the IronMQ message.
+CamelIronMQReservationId|String|The reservation of the IronMQ message.
+CamelIronMQReservedCount|String|The number of times this message has been reserved.
+
+
 Consumer example
 ========
 

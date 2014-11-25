@@ -5,7 +5,7 @@ public interface IronMQConstants {
     String MESSAGE_ID = "CamelIronMQMessageId";
     String MESSAGE_RESERVATION_ID = "CamelIronMQReservationId";
     String MESSAGE_RESERVED_COUNT = "CamelIronMQReservedCount";
-    String OPERATION = "Operation";
-    String CLEARQUEUE = "ClearQueue";
+    String OPERATION = "CamelIronMQOperation";
+    String CLEARQUEUE = "CamelIronMQClearQueue";
 
 }
