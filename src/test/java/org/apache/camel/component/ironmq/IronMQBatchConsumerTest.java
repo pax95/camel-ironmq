@@ -16,10 +16,10 @@
  */
 package org.apache.camel.component.ironmq;
 
-import io.iron.ironmq.Message;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import io.iron.ironmq.Message;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;

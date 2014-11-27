@@ -16,12 +16,12 @@
  */
 package org.apache.camel.component.ironmq;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 import io.iron.ironmq.EmptyQueueException;
 import io.iron.ironmq.Message;
 import io.iron.ironmq.Messages;
-
-import java.util.LinkedList;
-import java.util.Queue;
 
 import org.apache.camel.Endpoint;
 import org.apache.camel.Exchange;
@@ -51,8 +51,7 @@ public class IronMQConsumer extends ScheduledBatchPollingConsumer {
         pendingExchanges = 0;
         try {
             Messages messages = null;
-            LOG.trace("Receiving messages with request [messagePerPoll{}, timeout {}, wait {}]...", getMaxMessagesPerPoll(), getEndpoint().getConfiguration().getTimeout(),
-                      getEndpoint().getConfiguration().getWait());
+            LOG.trace("Receiving messages with request [messagePerPoll{}, timeout {}]...", getMaxMessagesPerPoll(), getEndpoint().getConfiguration().getTimeout());
             messages = getEndpoint().getQueue().reserve(getMaxMessagesPerPoll(), getEndpoint().getConfiguration().getTimeout(), getEndpoint().getConfiguration().getWait());
             LOG.trace("Received {} messages", messages.getMessages().length);
 

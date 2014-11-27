@@ -16,11 +16,11 @@
  */
 package org.apache.camel.component.ironmq;
 
+import java.net.MalformedURLException;
+
 import io.iron.ironmq.Client;
 import io.iron.ironmq.Cloud;
 import io.iron.ironmq.Queue;
-
-import java.net.MalformedURLException;
 
 import org.apache.camel.Consumer;
 import org.apache.camel.Exchange;

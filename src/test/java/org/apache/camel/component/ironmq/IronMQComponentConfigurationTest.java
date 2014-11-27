@@ -58,7 +58,8 @@ public class IronMQComponentConfigurationTest extends CamelTestSupport {
     public void createEndpointWithMaximalConfiguration() throws Exception {
         IronMQComponent component = new IronMQComponent(context);
         IronMQEndpoint endpoint = (IronMQEndpoint)component
-            .createEndpoint("ironmq://TestQueue?projectId=xxx&token=yyy&timeout=120&visibilityDelay=5&expiresIn=400000&maxMessagesPerPoll=20&preserveHeaders=true&wait=30&ironMQCloud=https://iron.foo&batchDelete=true");
+            .createEndpoint("ironmq://TestQueue?projectId=xxx&token=yyy&timeout=120&visibilityDelay=5&expiresIn=400000&maxMessagesPerPoll=20&preserveHeaders=true&wait=30"
+                            + "&ironMQCloud=https://iron.foo&batchDelete=true");
         assertEquals("TestQueue", endpoint.getConfiguration().getQueueName());
         assertEquals("xxx", endpoint.getConfiguration().getProjectId());
         assertEquals("yyy", endpoint.getConfiguration().getToken());
