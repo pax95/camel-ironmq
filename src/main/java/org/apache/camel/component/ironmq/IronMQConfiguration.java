@@ -24,13 +24,13 @@ public class IronMQConfiguration {
     @UriParam
     private int expiresIn = 604800;
     @UriParam
-    private int visibilityDelay = 0;
+    private int visibilityDelay;
     @UriParam
-    private boolean preserveHeaders = false;
+    private boolean preserveHeaders;
     @UriParam
-    private boolean batchDelete = false;
+    private boolean batchDelete;
     @UriParam
-    private int wait = 0;
+    private int wait;
 
     public Client getClient() {
         return client;
