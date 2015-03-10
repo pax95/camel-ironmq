@@ -29,6 +29,7 @@ import org.apache.camel.Message;
 import org.apache.camel.Processor;
 import org.apache.camel.Producer;
 import org.apache.camel.impl.DefaultExchange;
+import org.apache.camel.impl.DefaultScheduledPollConsumerScheduler;
 import org.apache.camel.impl.ScheduledPollEndpoint;
 import org.apache.camel.spi.UriEndpoint;
 import org.slf4j.Logger;
@@ -37,7 +38,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Represents a IronMQ endpoint.
  */
-@UriEndpoint(scheme = "ironmq", consumerClass = IronMQConsumer.class)
+@UriEndpoint(scheme = "ironmq", syntax = "ironmq:url", consumerClass = IronMQConsumer.class, label = "cloud,messaging")
 public class IronMQEndpoint extends ScheduledPollEndpoint {
     private static final Logger LOG = LoggerFactory.getLogger(IronMQEndpoint.class);
 
@@ -58,6 +59,10 @@ public class IronMQEndpoint extends ScheduledPollEndpoint {
         IronMQConsumer ironMQConsumer = new IronMQConsumer(this, processor);
         configureConsumer(ironMQConsumer);
         ironMQConsumer.setMaxMessagesPerPoll(configuration.getMaxMessagesPerPoll());
+        DefaultScheduledPollConsumerScheduler scheduler = new DefaultScheduledPollConsumerScheduler();
+        scheduler.setConcurrentTasks(configuration.getConcurrentConsumers());
+        ironMQConsumer.setScheduler(scheduler);
+
         return ironMQConsumer;
     }
 

@@ -53,12 +53,13 @@ public class IronMQConsumer extends ScheduledBatchPollingConsumer {
             Messages messages = null;
             LOG.trace("Receiving messages with request [messagePerPoll{}, timeout {}]...", getMaxMessagesPerPoll(), getEndpoint().getConfiguration().getTimeout());
             messages = getEndpoint().getQueue().reserve(getMaxMessagesPerPoll(), getEndpoint().getConfiguration().getTimeout(), getEndpoint().getConfiguration().getWait());
-            LOG.trace("Received {} messages", messages.getMessages().length);
+            LOG.trace("Received {} messages", messages.getSize());
 
             Queue<Exchange> exchanges = createExchanges(messages.getMessages());
             int noProcessed = processBatch(CastUtils.cast(exchanges));
             // delete all processed messages in one batch;
             if (getEndpoint().getConfiguration().isBatchDelete()) {
+                LOG.trace("Batch deleting {} messages", messages.getSize());
                 getEndpoint().getQueue().deleteMessages(messages);
             }
             return noProcessed;
@@ -131,7 +132,6 @@ public class IronMQConsumer extends ScheduledBatchPollingConsumer {
             String reservationId = ExchangeHelper.getMandatoryHeader(exchange, IronMQConstants.MESSAGE_RESERVATION_ID, String.class);
             LOG.trace("Deleting message with messageId {} and reservationId {}...", messageid, reservationId);
             getEndpoint().getQueue().deleteMessage(messageid, reservationId);
-            LOG.trace("Message deleted");
         } catch (Exception e) {
             getExceptionHandler().handleException("Error occurred during delete of message. This exception is ignored.", exchange, e);
         }

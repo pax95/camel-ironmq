@@ -22,6 +22,7 @@ projectId   		| null          | Shared  	| IronMQ projectid
 token       		| null          | Shared  	| IronMQ token
 ironMQCloud 		| https://mq-aws-us-east-1.iron.io | Shared  | IronMq Cloud url. See [IronIo documents](http://dev.iron.io/mq/reference/clouds/) for valid options
 preserveHeaders		| false			| Shared | Should Camel headers be preserved. This will add the Camel headers to the Iron MQ message body as a json payload with a header list, and a message body. This is useful when Camel is both consumer and producer.
+concurrentConsumers | 1             | Consumer  | Number of concurrent consumers.
 timeout      		| 60			| Consumer	| After timeout (in seconds), item will be placed back onto the queue
 maxMessagesPerPoll	| 1				| Consumer | How many messages pr. poll.
 batchDelete | false | Consumer | Should messages be deleted in one batch. This will limit the number of api requests since messages are deleted in one request, instead of one pr. exchange. If enabled care should be taken that the consumer is idempotent when processing exchanges.
@@ -63,7 +64,7 @@ Building from source
 	
 	$ git clone git://github.com/pax95/camel-ironmq.git
 	$ cd camel-ironmq
-	$ mvn clean package
+	$ mvn clean install
 
 	
   

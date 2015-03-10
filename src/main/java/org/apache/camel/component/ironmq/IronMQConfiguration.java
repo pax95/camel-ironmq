@@ -23,7 +23,8 @@ import org.apache.camel.spi.UriParams;
 
 @UriParams
 public class IronMQConfiguration {
-    // consumer and producer
+    // common properties
+    @UriParam
     private Client client;
     @UriParam
     private String projectId;
@@ -31,20 +32,26 @@ public class IronMQConfiguration {
     private String token;
     @UriParam
     private String queueName;
-    @UriParam
+    @UriParam(defaultValue = "https://mq-aws-us-east-1.iron.io")
     private String ironMQCloud = "https://mq-aws-us-east-1.iron.io";
     @UriParam
-    private int timeout = 60;
-    @UriParam
-    private int maxMessagesPerPoll = 1;
-    @UriParam
+    private boolean preserveHeaders;
+
+    // producer properties
+    @UriParam(defaultValue = "604800")
     private int expiresIn = 604800;
     @UriParam
     private int visibilityDelay;
-    @UriParam
-    private boolean preserveHeaders;
+
+    // consumer properties
+    @UriParam(defaultValue = "1")
+    private Integer concurrentConsumers = 1;
     @UriParam
     private boolean batchDelete;
+    @UriParam(defaultValue = "1")
+    private int maxMessagesPerPoll = 1;
+    @UriParam(defaultValue = "60")
+    private int timeout = 60;
     @UriParam
     private int wait;
 
@@ -54,6 +61,14 @@ public class IronMQConfiguration {
 
     public void setClient(Client client) {
         this.client = client;
+    }
+
+    public Integer getConcurrentConsumers() {
+        return concurrentConsumers;
+    }
+
+    public void setConcurrentConsumers(Integer concurrentConsumers) {
+        this.concurrentConsumers = concurrentConsumers;
     }
 
     public String getProjectId() {
