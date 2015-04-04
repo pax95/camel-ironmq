@@ -28,10 +28,10 @@ import org.junit.Test;
 
 @Ignore("Must be manually tested. Provide your own projectId and token!")
 public class ConcurrentConsumerLoadTest extends CamelTestSupport {
-    private static final String IRONMQCLOUD = "http://mq-aws-eu-west-1-1.iron.io";
-    private static final int NO_OF_MESSAGES = 10000;
+    private static final String IRONMQCLOUD = "https://mq-aws-eu-west-1-1.iron.io";
+    private static final int NO_OF_MESSAGES = 50000;
     private static final String BATCH_DELETE = "true";
-    private static final int CONCURRENT_CONSUMERS = 20;
+    private static final int CONCURRENT_CONSUMERS = 40;
     private static final String PAYLOAD = "{some:text, number:#}";
 
     // replace with your project id
@@ -60,7 +60,7 @@ public class ConcurrentConsumerLoadTest extends CamelTestSupport {
         long delta = System.currentTimeMillis() - start;
         int seconds = (int)delta / 1000;
         int msgPrSec = (int)(NO_OF_MESSAGES / seconds);
-        log.info("IronMQPerformanceTest: Took: " + seconds + " seconds to produce " + NO_OF_MESSAGES + " messages. Which is " + msgPrSec + " messages pr. seconds");
+        log.info("IronMQPerformanceTest: Took: " + seconds + " seconds to produce " + NO_OF_MESSAGES + " messages. Which is " + msgPrSec + " messages pr. second");
 
     }
 
@@ -74,7 +74,7 @@ public class ConcurrentConsumerLoadTest extends CamelTestSupport {
         long delta = System.currentTimeMillis() - start;
         int seconds = (int)delta / 1000;
         int msgPrSec = (int)(NO_OF_MESSAGES / seconds);
-        log.info("IronmqPerformanceTest: Took: " + seconds + " seconds to consume " + NO_OF_MESSAGES + " messages. Which is " + msgPrSec + " messages pr. seconds");
+        log.info("IronmqPerformanceTest: Took: " + seconds + " seconds to consume " + NO_OF_MESSAGES + " messages. Which is " + msgPrSec + " messages pr. second");
     }
 
     @Override

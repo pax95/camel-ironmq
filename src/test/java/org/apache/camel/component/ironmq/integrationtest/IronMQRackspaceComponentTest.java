@@ -16,13 +16,10 @@
  */
 package org.apache.camel.component.ironmq.integrationtest;
 
-import io.iron.ironmq.Cloud;
-
 import org.apache.camel.EndpointInject;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.apache.camel.impl.JndiRegistry;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -32,7 +29,6 @@ import org.junit.Test;
 public class IronMQRackspaceComponentTest extends CamelTestSupport {
     private String projectId = "myIronMQproject";
     private String token = "myIronMQToken";
-    private Cloud cloud = Cloud.ironRackspaceLON;
 
     @EndpointInject(uri = "direct:start")
     private ProducerTemplate template;
@@ -52,15 +48,8 @@ public class IronMQRackspaceComponentTest extends CamelTestSupport {
     }
 
     @Override
-    protected JndiRegistry createRegistry() throws Exception {
-        JndiRegistry registry = super.createRegistry();
-        registry.bind("ironMQCloud", cloud);
-        return registry;
-    }
-
-    @Override
     protected RouteBuilder createRouteBuilder() throws Exception {
-        final String ironMQEndpoint = "ironmq:testqueue?projectId=" + projectId + "&token=" + token + "&ironMQCloud=#ironMQCloud";
+        final String ironMQEndpoint = "ironmq:testqueue?projectId=" + projectId + "&token=" + token + "&ironMQCloud=https://mq-rackspace-lon.iron.io";
         return new RouteBuilder() {
             public void configure() {
                 from("direct:start").to(ironMQEndpoint);

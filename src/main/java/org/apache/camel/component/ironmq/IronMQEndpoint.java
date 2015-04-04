@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Represents a IronMQ endpoint.
  */
-@UriEndpoint(scheme = "ironmq", syntax = "ironmq:url", consumerClass = IronMQConsumer.class, label = "cloud,messaging")
+@UriEndpoint(scheme = "ironmq", syntax = "ironmq:url", title = "IronMQ", consumerClass = IronMQConsumer.class, label = "cloud,messaging")
 public class IronMQEndpoint extends ScheduledPollEndpoint {
     private static final Logger LOG = LoggerFactory.getLogger(IronMQEndpoint.class);
 

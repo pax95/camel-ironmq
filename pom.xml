@@ -15,7 +15,7 @@
 	<parent>
 		<groupId>org.apache.camel</groupId>
 		<artifactId>components</artifactId>
-		<version>2.15.0</version>
+		<version>2.15.1</version>
 	</parent>
 
 	<artifactId>camel-ironmq</artifactId>
@@ -37,7 +37,7 @@
 		<dependency>
 			<groupId>io.iron.ironmq</groupId>
 			<artifactId>ironmq</artifactId>
-			<version>3.0.1</version>
+			<version>3.0.2</version>
 		</dependency>
 		<!-- logging -->
 		<dependency>
