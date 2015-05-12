@@ -1,20 +1,38 @@
+/**
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.apache.camel.component.ironmq;
-
-import io.iron.ironmq.Client;
-import io.iron.ironmq.EmptyQueueException;
-import org.apache.camel.*;
-import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.component.mock.MockEndpoint;
-import org.apache.camel.test.junit4.CamelTestSupport;
-import org.junit.Test;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by DKolb on 5/12/15.
- */
+import io.iron.ironmq.Client;
+import io.iron.ironmq.EmptyQueueException;
+
+import org.apache.camel.CamelContext;
+import org.apache.camel.EndpointInject;
+import org.apache.camel.Exchange;
+import org.apache.camel.ExchangePattern;
+import org.apache.camel.Processor;
+import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.mock.MockEndpoint;
+import org.apache.camel.test.junit4.CamelTestSupport;
+import org.junit.Test;
+
 public class FromQueueToQueueTest extends CamelTestSupport {
 
     @EndpointInject(uri = "mock:result")
@@ -23,7 +41,6 @@ public class FromQueueToQueueTest extends CamelTestSupport {
     private IronMQEndpoint queue1;
 
     private IronMQEndpoint queue2;
-
 
     @Test
     public void shouldDeleteMessageFromQueue1() throws Exception {
@@ -42,7 +59,7 @@ public class FromQueueToQueueTest extends CamelTestSupport {
             queue1.getQueue().get();
             fail("Message was in the first queue!");
         } catch (IOException e) {
-            if(!(e instanceof EmptyQueueException)) {
+            if (!(e instanceof EmptyQueueException)) {
                 // Unexpected exception.
                 throw e;
             }
@@ -52,7 +69,7 @@ public class FromQueueToQueueTest extends CamelTestSupport {
             queue2.getQueue().get();
             fail("Message remained in second queue!");
         } catch (IOException e) {
-            if(!(e instanceof EmptyQueueException)) {
+            if (!(e instanceof EmptyQueueException)) {
                 // Unexpected exception.
                 throw e;
             }
