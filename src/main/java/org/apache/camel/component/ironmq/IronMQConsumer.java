@@ -98,8 +98,11 @@ public class IronMQConsumer extends ScheduledBatchPollingConsumer {
             // if batchDelete is not enabled
             if (!getEndpoint().getConfiguration().isBatchDelete()) {
                 exchange.addOnCompletion(new Synchronization() {
+                    final String reservationId = ExchangeHelper.getMandatoryHeader(exchange, IronMQConstants.MESSAGE_RESERVATION_ID, String.class);
+                    final String messageid = ExchangeHelper.getMandatoryHeader(exchange, IronMQConstants.MESSAGE_ID, String.class);
+
                     public void onComplete(Exchange exchange) {
-                        processCommit(exchange);
+                        processCommit(exchange, messageid, reservationId);
                     }
 
                     public void onFailure(Exchange exchange) {
@@ -126,12 +129,11 @@ public class IronMQConsumer extends ScheduledBatchPollingConsumer {
      * 
      * @param exchange the exchange
      */
-    protected void processCommit(Exchange exchange) {
+    protected void processCommit(Exchange exchange, String messageid, String reservationId) {
         try {
-            String messageid = ExchangeHelper.getMandatoryHeader(exchange, IronMQConstants.MESSAGE_ID, String.class);
-            String reservationId = ExchangeHelper.getMandatoryHeader(exchange, IronMQConstants.MESSAGE_RESERVATION_ID, String.class);
             LOG.trace("Deleting message with messageId {} and reservationId {}...", messageid, reservationId);
             getEndpoint().getQueue().deleteMessage(messageid, reservationId);
+            LOG.trace("Message deleted");
         } catch (Exception e) {
             getExceptionHandler().handleException("Error occurred during delete of message. This exception is ignored.", exchange, e);
         }
