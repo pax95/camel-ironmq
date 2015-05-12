@@ -49,7 +49,7 @@ public class IronMQComponent extends UriEndpointComponent {
             throw new IllegalArgumentException("Client or project and token must be specified.");
         }
 
-        Endpoint endpoint = new IronMQEndpoint(uri, this, ironMQConfiguration);
+        Endpoint endpoint = new IronMQEndpoint(uri + "://" + ironMQConfiguration.getQueueName(), this, ironMQConfiguration);
         ((ScheduledPollEndpoint)endpoint).setConsumerProperties(parameters);
 
         return endpoint;
