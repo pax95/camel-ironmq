@@ -96,8 +96,11 @@ public class IronMQConsumer extends ScheduledBatchPollingConsumer {
 
             // add on completion to handle after work when the exchange is done
             exchange.addOnCompletion(new Synchronization() {
+
+                final String messageid = ExchangeHelper.getMandatoryHeader(exchange, IronMQConstants.MESSAGE_ID, String.class);
+
                 public void onComplete(Exchange exchange) {
-                    processCommit(exchange);
+                    processCommit(exchange, messageid);
                 }
 
                 public void onFailure(Exchange exchange) {
@@ -123,10 +126,9 @@ public class IronMQConsumer extends ScheduledBatchPollingConsumer {
      * 
      * @param exchange the exchange
      */
-    protected void processCommit(Exchange exchange) {
-        String messageid = null;
+    protected void processCommit(Exchange exchange, String messageid) {
         try {
-            messageid = ExchangeHelper.getMandatoryHeader(exchange, IronMQConstants.MESSAGE_ID, String.class);
+
             LOG.trace("Deleting message with id {}...", messageid);
             getEndpoint().getQueue().deleteMessage(messageid);
             LOG.trace("Message deleted");
