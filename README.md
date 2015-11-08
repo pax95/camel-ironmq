@@ -3,6 +3,8 @@ camel-ironmq
 
 Ironmq component for Camel supports integration with [IronMQ](http://www.iron.io/products/mq) an elastic and durable hosted message queue service.
 
+The master branch targets IronMq v3 while v2 is supported using the [v2 branch](https://github.com/pax95/camel-ironmq/tree/v2).
+
 To run it requires a IronMQ acount with projectId and token.
 
 ###Status
