@@ -38,8 +38,10 @@ public class ConcurrentConsumerLoadTest extends CamelTestSupport {
     private final String projectId = "myIronMQproject";
     // replace with your token
     private final String token = "myIronMQToken";
+    // replace with your test queue name
+    private final String ironmqQueue = "testqueue";
 
-    private final String ironMQEndpoint = "ironmq:testqueue?projectId=" + projectId + "&token=" + token + "&maxMessagesPerPoll=100&wait=30&ironMQCloud=" + IRONMQCLOUD
+    private final String ironMQEndpoint = "ironmq:" + ironmqQueue + "?projectId=" + projectId + "&token=" + token + "&maxMessagesPerPoll=100&wait=30&ironMQCloud=" + IRONMQCLOUD
                                           + "&concurrentConsumers=" + CONCURRENT_CONSUMERS + "&batchDelete=" + BATCH_DELETE;
     private final String sedaEndpoint = "seda:push?concurrentConsumers=" + CONCURRENT_CONSUMERS;
 

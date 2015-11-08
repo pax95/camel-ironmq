@@ -18,8 +18,10 @@ package org.apache.camel.component.ironmq;
 
 import io.iron.ironmq.Client;
 
+import org.apache.camel.spi.Metadata;
 import org.apache.camel.spi.UriParam;
 import org.apache.camel.spi.UriParams;
+import org.apache.camel.spi.UriPath;
 
 @UriParams
 public class IronMQConfiguration {
@@ -30,7 +32,7 @@ public class IronMQConfiguration {
     private String projectId;
     @UriParam
     private String token;
-    @UriParam
+    @UriPath @Metadata(required = "true")
     private String queueName;
     @UriParam(defaultValue = "https://mq-aws-us-east-1.iron.io")
     private String ironMQCloud = "https://mq-aws-us-east-1.iron.io";
@@ -59,6 +61,9 @@ public class IronMQConfiguration {
         return client;
     }
 
+    /**
+     * Reference to a io.iron.ironmq.Client in the Registry. 
+     */
     public void setClient(Client client) {
         this.client = client;
     }
@@ -67,6 +72,9 @@ public class IronMQConfiguration {
         return concurrentConsumers;
     }
 
+    /**
+     * The number of concurrent consumers.
+     */
     public void setConcurrentConsumers(Integer concurrentConsumers) {
         this.concurrentConsumers = concurrentConsumers;
     }
@@ -75,6 +83,9 @@ public class IronMQConfiguration {
         return projectId;
     }
 
+    /**
+     * IronMq projectId
+     */
     public void setProjectId(String projectId) {
         this.projectId = projectId;
     }
@@ -83,10 +94,16 @@ public class IronMQConfiguration {
         return token;
     }
 
+    /**
+     * IronMq token
+     */
     public void setToken(String token) {
         this.token = token;
     }
 
+    /**
+     * The name of the IronMQ queue 
+     */
     public void setQueueName(String queueName) {
         this.queueName = queueName;
     }
@@ -95,6 +112,9 @@ public class IronMQConfiguration {
         return queueName;
     }
 
+    /**
+     * IronMq Cloud url. See http://dev.iron.io/mq/reference/clouds/ for valid options
+     */
     public void setIronMQCloud(String ironMQCloud) {
         this.ironMQCloud = ironMQCloud;
     }
@@ -107,6 +127,9 @@ public class IronMQConfiguration {
         return timeout;
     }
 
+    /**
+     * sets the timeout
+     */
     public void setTimeout(int timeout) {
         this.timeout = timeout;
     }
@@ -115,6 +138,9 @@ public class IronMQConfiguration {
         return maxMessagesPerPoll;
     }
 
+    /**
+     * Number of messages to poll pr. call
+     */
     public void setMaxMessagesPerPoll(int maxMessagesPerPoll) {
         this.maxMessagesPerPoll = maxMessagesPerPoll;
     }
@@ -123,6 +149,9 @@ public class IronMQConfiguration {
         return expiresIn;
     }
 
+    /**
+     * Time to live for messages
+     */
     public void setExpiresIn(int expiresIn) {
         this.expiresIn = expiresIn;
     }
@@ -131,6 +160,9 @@ public class IronMQConfiguration {
         return visibilityDelay;
     }
 
+    /**
+     * Set's the visibility delay in seconds.
+     */
     public void setVisibilityDelay(int visibilityDelay) {
         this.visibilityDelay = visibilityDelay;
     }
@@ -139,6 +171,9 @@ public class IronMQConfiguration {
         return preserveHeaders;
     }
 
+    /**
+     * Should camel message headers be preserved when publishing messages
+     */
     public void setPreserveHeaders(boolean preserveHeaders) {
         this.preserveHeaders = preserveHeaders;
     }
@@ -147,6 +182,9 @@ public class IronMQConfiguration {
         return batchDelete;
     }
 
+    /**
+     * Shold messages be deleted in one batch or one at the time
+     */
     public void setBatchDelete(boolean batchDelete) {
         this.batchDelete = batchDelete;
     }
@@ -155,6 +193,9 @@ public class IronMQConfiguration {
         return wait;
     }
 
+    /**
+     * Sets the wait
+     */
     public void setWait(int wait) {
         this.wait = wait;
     }

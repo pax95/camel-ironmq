@@ -32,6 +32,7 @@ import org.apache.camel.impl.DefaultExchange;
 import org.apache.camel.impl.DefaultScheduledPollConsumerScheduler;
 import org.apache.camel.impl.ScheduledPollEndpoint;
 import org.apache.camel.spi.UriEndpoint;
+import org.apache.camel.spi.UriParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,8 +43,10 @@ import org.slf4j.LoggerFactory;
 public class IronMQEndpoint extends ScheduledPollEndpoint {
     private static final Logger LOG = LoggerFactory.getLogger(IronMQEndpoint.class);
 
-    private Client client;
+    @UriParam
     private IronMQConfiguration configuration;
+
+    private Client client;
     private Queue queue;
 
     public IronMQEndpoint(String uri, IronMQComponent component, IronMQConfiguration ironMQConfiguration) {
