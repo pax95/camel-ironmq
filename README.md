@@ -5,10 +5,11 @@ Ironmq component for Camel supports integration with [IronMQ](http://www.iron.io
 
 The master branch targets IronMq v3 while v2 is supported using the [v2 branch](https://github.com/pax95/camel-ironmq/tree/v2).
 
-To run it requires a IronMQ acount with projectId and token.
+To run it requires a IronMQ account with projectId and token.
 
-###Status
-![Build Status](https://travis-ci.org/pax95/camel-ironmq.svg?branch=master)
+Status
+======
+[![Build Status](https://travis-ci.org/pax95/camel-ironmq.svg?branch=master)](https://travis-ci.org/pax95/camel-ironmq)
 
 Uri format:
 ===========
@@ -37,7 +38,7 @@ Message headers evaluated by the IronMQ producer
 
 Header                  |Type  | Description
 ------------------------|------|--------------
-CamelIronMQOperation    |String|If value set to 'CamelIronMQClearQueue' the queue is cleared of unconsumed  messages. 
+CamelIronMQOperation    |String|If value set to 'CamelIronMQClearQueue' the queue is cleared of unconsumed  messages.
 
 Message headers set by the IronMQ consumer
 =======================================
@@ -63,11 +64,7 @@ Producer example
 Building from source
 ====================
 
-	
+
 	$ git clone git://github.com/pax95/camel-ironmq.git
 	$ cd camel-ironmq
 	$ mvn clean install
-
-	
-  
-
