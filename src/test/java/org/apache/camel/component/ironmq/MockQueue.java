@@ -17,6 +17,7 @@
 package org.apache.camel.component.ironmq;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -30,6 +31,7 @@ import java.util.UUID;
 import io.iron.ironmq.Client;
 import io.iron.ironmq.EmptyQueueException;
 import io.iron.ironmq.HTTPException;
+import io.iron.ironmq.Ids;
 import io.iron.ironmq.Message;
 import io.iron.ironmq.MessageOptions;
 import io.iron.ironmq.Messages;
@@ -43,16 +45,37 @@ public class MockQueue extends Queue {
     }
 
     @Override
-    public String push(String msg, long delay, long expiresIn) throws IOException {
+    public String push(String msg, long delay) throws IOException {
         String randint = new BigInteger(24 * 8, new Random()).toString(16);
         Message message = new Message();
         message.setBody(msg);
         message.setDelay(delay);
-        message.setExpiresIn(expiresIn);
         message.setId(randint);
         message.setReservationId(UUID.randomUUID().toString());
         messages.put(randint, message);
         return randint;
+    }
+
+    @Override
+    public Ids pushMessages(String[] msg, long delay) throws IOException {
+        for (String messageName : msg) {
+            Message message = new Message();
+            message.setBody(messageName);
+            message.setDelay(delay);
+            String randint = new BigInteger(24 * 8, new Random()).toString(16);
+            message.setId(randint);
+            message.setReservationId(UUID.randomUUID().toString());
+            messages.put(randint, message);
+        }
+        Ids ids = null;
+        try {
+            Constructor<Ids> constructor = Ids.class.getDeclaredConstructor(Messages.class);
+            constructor.setAccessible(true);
+            Messages messageList = new Messages(new ArrayList<Message>(messages.values()));
+            ids = constructor.newInstance(messageList);
+        } catch (Exception e) {
+        }
+        return ids;
     }
 
     @Override

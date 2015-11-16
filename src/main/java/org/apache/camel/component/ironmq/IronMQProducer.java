@@ -17,6 +17,7 @@
 package org.apache.camel.component.ironmq;
 
 import org.apache.camel.Exchange;
+import org.apache.camel.InvalidPayloadException;
 import org.apache.camel.Message;
 import org.apache.camel.impl.DefaultProducer;
 import org.slf4j.Logger;
@@ -37,17 +38,22 @@ public class IronMQProducer extends DefaultProducer {
         if (IronMQConstants.CLEARQUEUE.equals(exchange.getIn().getHeader(IronMQConstants.OPERATION, String.class))) {
             getEndpoint().getQueue().clear();
         } else {
-            String body = null;
-            if (configuration.isPreserveHeaders()) {
-                body = GsonUtil.getBodyFromMessage(exchange.getIn());
+            Object messageId = null;
+            Object body = exchange.getIn().getBody();
+            if (body instanceof String[]) {
+                messageId = getEndpoint().getQueue().pushMessages((String[])body, configuration.getVisibilityDelay());
+            } else if (body instanceof String) {
+                if (configuration.isPreserveHeaders()) {
+                    body = GsonUtil.getBodyFromMessage(exchange.getIn());
+                }
+                messageId = getEndpoint().getQueue().push((String)body, configuration.getVisibilityDelay());
             } else {
-                body = exchange.getIn().getBody(String.class);
+                throw new InvalidPayloadException(exchange, String.class);
             }
-            LOG.trace("Sending request [{}] from exchange [{}]...", body, exchange);
-            String id = getEndpoint().getQueue().push(body, configuration.getVisibilityDelay(), configuration.getExpiresIn());
-            LOG.trace("Received id [{}]", id);
+            LOG.trace("Send request [{}] from exchange [{}]...", body, exchange);
+            LOG.trace("Received messageId [{}]", messageId);
             Message message = getMessageForResponse(exchange);
-            message.setHeader(IronMQConstants.MESSAGE_ID, id);
+            message.setHeader(IronMQConstants.MESSAGE_ID, messageId);
         }
     }
 

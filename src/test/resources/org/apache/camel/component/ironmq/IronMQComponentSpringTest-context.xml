@@ -23,7 +23,7 @@
     <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
         <route>
             <from uri="direct:start"/>
-            <to uri="ironmq://testqueue?client=#client&amp;expiresIn=3604800"/>
+            <to uri="ironmq://testqueue?client=#client"/>
         </route>
 
         <route>

@@ -16,6 +16,7 @@
  */
 package org.apache.camel.component.ironmq.integrationtest;
 
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.camel.builder.RouteBuilder;
@@ -31,7 +32,7 @@ public class ConcurrentConsumerLoadTest extends CamelTestSupport {
     private static final String IRONMQCLOUD = "https://mq-aws-eu-west-1-1.iron.io";
     private static final int NO_OF_MESSAGES = 50000;
     private static final String BATCH_DELETE = "true";
-    private static final int CONCURRENT_CONSUMERS = 40;
+    private static final int CONCURRENT_CONSUMERS = 20;
     private static final String PAYLOAD = "{some:text, number:#}";
 
     // replace with your project id
@@ -50,20 +51,27 @@ public class ConcurrentConsumerLoadTest extends CamelTestSupport {
         // make sure the queue is empty before test
         template.sendBodyAndHeader(ironMQEndpoint, null, IronMQConstants.OPERATION, IronMQConstants.CLEARQUEUE);
         long start = System.currentTimeMillis();
+        int noOfBlocks = 0;
+        ArrayList<String> list = new ArrayList<String>();
         for (int i = 1; i <= NO_OF_MESSAGES; i++) {
             String payloadToSend = PAYLOAD.replace("#", "" + i);
-            template.sendBody(sedaEndpoint, payloadToSend);
+            list.add(payloadToSend);
+            if (i % 100 == 0) {
+                noOfBlocks++;
+                System.out.println("sending blok " + noOfBlocks);
+                template.sendBody(sedaEndpoint, list.toArray(new String[0]));
+                list.clear();
+            }
         }
         MockEndpoint mockEndpoint = getMockEndpoint("mock:iron");
-        while (mockEndpoint.getReceivedCounter() < NO_OF_MESSAGES) {
-            log.info("Waiting for queue to fill up. Current size is " + mockEndpoint.getReceivedCounter());
+        while (mockEndpoint.getReceivedCounter() != noOfBlocks) {
+            log.info("Waiting for queue to fill up. Current size is " + mockEndpoint.getReceivedCounter() * 100);
             Thread.sleep(1000);
         }
         long delta = System.currentTimeMillis() - start;
         int seconds = (int)delta / 1000;
         int msgPrSec = (int)(NO_OF_MESSAGES / seconds);
         log.info("IronMQPerformanceTest: Took: " + seconds + " seconds to produce " + NO_OF_MESSAGES + " messages. Which is " + msgPrSec + " messages pr. second");
-
     }
 
     @Test

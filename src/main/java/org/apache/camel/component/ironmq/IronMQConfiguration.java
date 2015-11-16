@@ -40,8 +40,6 @@ public class IronMQConfiguration {
     private boolean preserveHeaders;
 
     // producer properties
-    @UriParam(defaultValue = "604800")
-    private int expiresIn = 604800;
     @UriParam
     private int visibilityDelay;
 
@@ -143,17 +141,6 @@ public class IronMQConfiguration {
      */
     public void setMaxMessagesPerPoll(int maxMessagesPerPoll) {
         this.maxMessagesPerPoll = maxMessagesPerPoll;
-    }
-
-    public int getExpiresIn() {
-        return expiresIn;
-    }
-
-    /**
-     * Time to live for messages
-     */
-    public void setExpiresIn(int expiresIn) {
-        this.expiresIn = expiresIn;
     }
 
     public int getVisibilityDelay() {

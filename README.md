@@ -30,7 +30,6 @@ timeout      		| 60			| Consumer	| After timeout (in seconds), item will be plac
 maxMessagesPerPoll	| 1				| Consumer | How many messages pr. poll.
 batchDelete | false | Consumer | Should messages be deleted in one batch. This will limit the number of api requests since messages are deleted in one request, instead of one pr. exchange. If enabled care should be taken that the consumer is idempotent when processing exchanges.
 wait | 0 | Consumer | Time in seconds to wait for a message to become available. This enables long polling. Default is 0 (does not wait), maximum is 30.  
-expiresIn			| 604800		| Producer	| How long in seconds to keep the item on the queue before it is deleted. Default is 604,800 seconds (7 days). Maximum is 2,592,000 seconds (30 days).
 visibilityDelay		| 0				| Producer	| The item will not be available on the queue until this many seconds have passed. Default is 0 seconds.
 
 Message headers evaluated by the IronMQ producer

@@ -32,7 +32,6 @@ public class IronMQComponentConfigurationTest extends CamelTestSupport {
         assertEquals(0, endpoint.getConfiguration().getVisibilityDelay());
         assertEquals(1, endpoint.getConfiguration().getMaxMessagesPerPoll());
         assertEquals(60, endpoint.getConfiguration().getTimeout());
-        assertEquals(604800, endpoint.getConfiguration().getExpiresIn());
         assertFalse(endpoint.getConfiguration().isPreserveHeaders());
         assertFalse(endpoint.getConfiguration().isBatchDelete());
         assertEquals(0, endpoint.getConfiguration().getWait());
@@ -50,7 +49,6 @@ public class IronMQComponentConfigurationTest extends CamelTestSupport {
         assertEquals(0, endpoint.getConfiguration().getVisibilityDelay());
         assertEquals(1, endpoint.getConfiguration().getMaxMessagesPerPoll());
         assertEquals(60, endpoint.getConfiguration().getTimeout());
-        assertEquals(604800, endpoint.getConfiguration().getExpiresIn());
         assertEquals("https://iron.foo", endpoint.getConfiguration().getIronMQCloud());
     }
 
@@ -58,7 +56,7 @@ public class IronMQComponentConfigurationTest extends CamelTestSupport {
     public void createEndpointWithMaximalConfiguration() throws Exception {
         IronMQComponent component = new IronMQComponent(context);
         IronMQEndpoint endpoint = (IronMQEndpoint)component
-            .createEndpoint("ironmq://TestQueue?projectId=xxx&token=yyy&timeout=120&visibilityDelay=5&expiresIn=400000&maxMessagesPerPoll=20&preserveHeaders=true&wait=30"
+            .createEndpoint("ironmq://TestQueue?projectId=xxx&token=yyy&timeout=120&visibilityDelay=5&maxMessagesPerPoll=20&preserveHeaders=true&wait=30"
                             + "&ironMQCloud=https://iron.foo&batchDelete=true");
         assertEquals("TestQueue", endpoint.getConfiguration().getQueueName());
         assertEquals("xxx", endpoint.getConfiguration().getProjectId());
@@ -66,7 +64,6 @@ public class IronMQComponentConfigurationTest extends CamelTestSupport {
         assertEquals(20, endpoint.getConfiguration().getMaxMessagesPerPoll());
         assertEquals(120, endpoint.getConfiguration().getTimeout());
         assertEquals(5, endpoint.getConfiguration().getVisibilityDelay());
-        assertEquals(400000, endpoint.getConfiguration().getExpiresIn());
         assertTrue(endpoint.getConfiguration().isPreserveHeaders());
         assertEquals(30, endpoint.getConfiguration().getWait());
         assertTrue(endpoint.getConfiguration().isBatchDelete());
