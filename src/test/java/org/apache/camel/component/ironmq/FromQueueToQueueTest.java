@@ -35,10 +35,10 @@ public class FromQueueToQueueTest extends CamelTestSupport {
     @EndpointInject(uri = "mock:result")
     private MockEndpoint result;
 
-    @EndpointInject(uri = "ironmq:testqueue?client=#ironMock1")
+    @EndpointInject(uri = "ironmq:testqueue?client=#ironMock")
     private IronMQEndpoint queue1;
 
-    @EndpointInject(uri = "ironmq:testqueue2?client=#ironMock2")
+    @EndpointInject(uri = "ironmq:testqueue2?client=#ironMock")
     private IronMQEndpoint queue2;
 
     @Test
@@ -56,7 +56,7 @@ public class FromQueueToQueueTest extends CamelTestSupport {
         assertMockEndpointsSatisfied();
 
         try {
-            queue1.getQueue().reserve();
+            queue1.getClient().queue("testqueue").reserve();
             fail("Message was in the first queue!");
         } catch (IOException e) {
             if (!(e instanceof EmptyQueueException)) {
@@ -66,7 +66,7 @@ public class FromQueueToQueueTest extends CamelTestSupport {
         }
 
         try {
-            queue2.getQueue().reserve();
+            queue2.getClient().queue("testqueue1").reserve();
             fail("Message remained in second queue!");
         } catch (IOException e) {
             if (!(e instanceof EmptyQueueException)) {
@@ -79,8 +79,7 @@ public class FromQueueToQueueTest extends CamelTestSupport {
     @Override
     protected JndiRegistry createRegistry() throws Exception {
         JndiRegistry registry = super.createRegistry();
-        registry.bind("ironMock1", new IronMQClientMock("dummy", "dummy"));
-        registry.bind("ironMock2", new IronMQClientMock("dummy", "dummy"));
+        registry.bind("ironMock", new IronMQClientMock("dummy", "dummy"));
         return registry;
     }
 
@@ -89,9 +88,9 @@ public class FromQueueToQueueTest extends CamelTestSupport {
         return new RouteBuilder() {
             @Override
             public void configure() {
-                from("direct:start").to("ironmq:testqueue?client=#ironMock1");
-                from("ironmq:testqueue?client=#ironMock1").to("ironmq:testqueue2?client=#ironMock2");
-                from("ironmq:testqueue2?client=#ironMock2").to("mock:result");
+                from("direct:start").to("ironmq:testqueue?client=#ironMock");
+                from("ironmq:testqueue?client=#ironMock").to("ironmq:testqueue2?client=#ironMock");
+                from("ironmq:testqueue2?client=#ironMock").to("mock:result");
             }
         };
     }

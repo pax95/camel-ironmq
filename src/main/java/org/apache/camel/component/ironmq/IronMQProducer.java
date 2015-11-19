@@ -16,6 +16,8 @@
  */
 package org.apache.camel.component.ironmq;
 
+import io.iron.ironmq.Queue;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.InvalidPayloadException;
 import org.apache.camel.Message;
@@ -28,25 +30,28 @@ import org.slf4j.LoggerFactory;
  */
 public class IronMQProducer extends DefaultProducer {
     private static final Logger LOG = LoggerFactory.getLogger(IronMQProducer.class);
-
-    public IronMQProducer(IronMQEndpoint endpoint) {
+    
+    private final Queue ironQueue;
+    
+    public IronMQProducer(IronMQEndpoint endpoint, Queue ironQueue) {
         super(endpoint);
+        this.ironQueue = ironQueue;
     }
 
     public void process(Exchange exchange) throws Exception {
         IronMQConfiguration configuration = getEndpoint().getConfiguration();
         if (IronMQConstants.CLEARQUEUE.equals(exchange.getIn().getHeader(IronMQConstants.OPERATION, String.class))) {
-            getEndpoint().getQueue().clear();
+            this.ironQueue.clear();
         } else {
             Object messageId = null;
             Object body = exchange.getIn().getBody();
             if (body instanceof String[]) {
-                messageId = getEndpoint().getQueue().pushMessages((String[])body, configuration.getVisibilityDelay());
+                messageId = this.ironQueue.pushMessages((String[])body, configuration.getVisibilityDelay());
             } else if (body instanceof String) {
                 if (configuration.isPreserveHeaders()) {
                     body = GsonUtil.getBodyFromMessage(exchange.getIn());
                 }
-                messageId = getEndpoint().getQueue().push((String)body, configuration.getVisibilityDelay());
+                messageId = this.ironQueue.push((String)body, configuration.getVisibilityDelay());
             } else {
                 throw new InvalidPayloadException(exchange, String.class);
             }

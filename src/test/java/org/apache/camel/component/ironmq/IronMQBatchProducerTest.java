@@ -16,7 +16,6 @@
  */
 package org.apache.camel.component.ironmq;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -30,6 +29,8 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.equalTo;
 
 public class IronMQBatchProducerTest extends CamelTestSupport {
 

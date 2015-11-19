@@ -39,9 +39,12 @@ import org.slf4j.LoggerFactory;
  */
 public class IronMQConsumer extends ScheduledBatchPollingConsumer {
     private static final Logger LOG = LoggerFactory.getLogger(IronMQConsumer.class);
-
-    public IronMQConsumer(Endpoint endpoint, Processor processor) {
+    
+    private final io.iron.ironmq.Queue ironQueue;
+    
+    public IronMQConsumer(Endpoint endpoint, Processor processor, io.iron.ironmq.Queue ironQueue) {
         super(endpoint, processor);
+        this.ironQueue = ironQueue;
     }
 
     @Override
@@ -52,7 +55,7 @@ public class IronMQConsumer extends ScheduledBatchPollingConsumer {
         try {
             Messages messages = null;
             LOG.trace("Receiving messages with request [messagePerPoll{}, timeout {}]...", getMaxMessagesPerPoll(), getEndpoint().getConfiguration().getTimeout());
-            messages = getEndpoint().getQueue().reserve(getMaxMessagesPerPoll(), getEndpoint().getConfiguration().getTimeout(), getEndpoint().getConfiguration().getWait());
+            messages = this.ironQueue.reserve(getMaxMessagesPerPoll(), getEndpoint().getConfiguration().getTimeout(), getEndpoint().getConfiguration().getWait());
             LOG.trace("Received {} messages", messages.getSize());
 
             Queue<Exchange> exchanges = createExchanges(messages.getMessages());
@@ -60,7 +63,7 @@ public class IronMQConsumer extends ScheduledBatchPollingConsumer {
             // delete all processed messages in one batch;
             if (getEndpoint().getConfiguration().isBatchDelete()) {
                 LOG.trace("Batch deleting {} messages", messages.getSize());
-                getEndpoint().getQueue().deleteMessages(messages);
+                this.ironQueue.deleteMessages(messages);
             }
             return noProcessed;
         } catch (EmptyQueueException e) {
@@ -132,7 +135,7 @@ public class IronMQConsumer extends ScheduledBatchPollingConsumer {
     protected void processCommit(Exchange exchange, String messageid, String reservationId) {
         try {
             LOG.trace("Deleting message with messageId {} and reservationId {}...", messageid, reservationId);
-            getEndpoint().getQueue().deleteMessage(messageid, reservationId);
+            this.ironQueue.deleteMessage(messageid, reservationId);
             LOG.trace("Message deleted");
         } catch (Exception e) {
             getExceptionHandler().handleException("Error occurred during delete of message. This exception is ignored.", exchange, e);

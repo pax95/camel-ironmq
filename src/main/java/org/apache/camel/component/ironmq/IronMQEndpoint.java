@@ -20,7 +20,6 @@ import java.net.MalformedURLException;
 
 import io.iron.ironmq.Client;
 import io.iron.ironmq.Cloud;
-import io.iron.ironmq.Queue;
 
 import org.apache.camel.Consumer;
 import org.apache.camel.Exchange;
@@ -47,7 +46,6 @@ public class IronMQEndpoint extends ScheduledPollEndpoint {
     private IronMQConfiguration configuration;
 
     private Client client;
-    private Queue queue;
 
     public IronMQEndpoint(String uri, IronMQComponent component, IronMQConfiguration ironMQConfiguration) {
         super(uri, component);
@@ -55,11 +53,11 @@ public class IronMQEndpoint extends ScheduledPollEndpoint {
     }
 
     public Producer createProducer() throws Exception {
-        return new IronMQProducer(this);
+        return new IronMQProducer(this, getClient().queue(configuration.getQueueName()));
     }
 
     public Consumer createConsumer(Processor processor) throws Exception {
-        IronMQConsumer ironMQConsumer = new IronMQConsumer(this, processor);
+        IronMQConsumer ironMQConsumer = new IronMQConsumer(this, processor, getClient().queue(configuration.getQueueName()));
         configureConsumer(ironMQConsumer);
         ironMQConsumer.setMaxMessagesPerPoll(configuration.getMaxMessagesPerPoll());
         DefaultScheduledPollConsumerScheduler scheduler = new DefaultScheduledPollConsumerScheduler();
@@ -91,21 +89,15 @@ public class IronMQEndpoint extends ScheduledPollEndpoint {
         return true;
     }
 
-    public Queue getQueue() {
-        return queue;
-    }
-
     @Override
     protected void doStart() throws Exception {
         super.doStart();
         client = getConfiguration().getClient() != null ? getConfiguration().getClient() : getClient();
-        this.queue = client.queue(configuration.getQueueName());
     }
 
     @Override
     protected void doStop() throws Exception {
         client = null;
-        queue = null;
         super.doStop();
     }
 

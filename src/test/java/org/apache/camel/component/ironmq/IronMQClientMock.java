@@ -16,22 +16,29 @@
  */
 package org.apache.camel.component.ironmq;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import io.iron.ironmq.Client;
 import io.iron.ironmq.Queue;
 
 public class IronMQClientMock extends Client {
-    private Queue queue;
-
+    private final Map<String, Queue> memQueues = new ConcurrentHashMap<String, Queue>();
+    
     public IronMQClientMock(String projectId, String token) {
         super(projectId, token);
     }
 
     @Override
     public Queue queue(String name) {
-        if (queue == null) {
-            queue = new MockQueue(this, name);
+        Queue answer = null;
+        if (memQueues.containsKey(name)) {
+            answer = memQueues.get(name);
+        } else {
+            answer = new MockQueue(this, name);
+            memQueues.put(name, answer);
         }
-        return queue;
+        return answer;
     }
 
 }

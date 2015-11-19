@@ -38,7 +38,7 @@ public class IronMQBatchConsumerTest extends CamelTestSupport {
             Message message = new Message();
             message.setBody("{\"body\": \"Message " + counter + "\"}");
             message.setId("" + counter);
-            ((MockQueue)endpoint.getQueue()).add(message);
+            ((MockQueue)endpoint.getClient().queue("testqueue")).add(message);
         }
 
         MockEndpoint mock = getMockEndpoint("mock:result");
@@ -58,7 +58,7 @@ public class IronMQBatchConsumerTest extends CamelTestSupport {
         mock.message(4).exchangeProperty(Exchange.BATCH_COMPLETE).isEqualTo(true);
         mock.expectedPropertyReceived(Exchange.BATCH_SIZE, 5);
         // message 5 should be left on the queue
-        Message lastMessage = endpoint.getQueue().peek();
+        Message lastMessage = endpoint.getClient().queue("testqueue").peek();
         assertTrue(lastMessage.getBody().contains("Message 5"));
     }
 

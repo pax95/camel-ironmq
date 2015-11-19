@@ -38,7 +38,7 @@ import io.iron.ironmq.Messages;
 import io.iron.ironmq.Queue;
 
 public class MockQueue extends Queue {
-    Map<String, Message> messages = new LinkedHashMap<String, Message>();
+    private Map<String, Message> messages = new LinkedHashMap<String, Message>();
 
     public MockQueue(Client client, String name) {
         super(client, name);
