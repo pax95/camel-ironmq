@@ -15,24 +15,24 @@ See examples below or the [unit tests](https://github.com/pax95/camel-ironmq/tre
 
 ## Uri format:
 
-	ironmq://queue-name[?options]
+  ironmq://queue-name[?options]
 
 ## URI options:
 
 
-Name				| Default value | Context 	| Description
-------      		| ------------- | ------- 	| -----------
-client      		| null          | Shared  	| Reference to a io.iron.ironmq.Client in the Registry.
-projectId   		| null          | Shared  	| IronMQ projectid
-token       		| null          | Shared  	| IronMQ token
-ironMQCloud 		| https://mq-aws-us-east-1.iron.io | Shared  | IronMq Cloud url. See [IronIo documents](http://dev.iron.io/mq/reference/clouds/) for valid options
-preserveHeaders		| false			| Shared | Should Camel headers be preserved. This will add the Camel headers to the Iron MQ message body as a json payload with a header list, and a message body. This is useful when Camel is both consumer and producer.
+Name        | Default value | Context   | Description
+------          | ------------- | -------   | -----------
+client          | null          | Shared    | Reference to a io.iron.ironmq.Client in the Registry.
+projectId       | null          | Shared    | IronMQ projectid
+token           | null          | Shared    | IronMQ token
+ironMQCloud     | https://mq-aws-us-east-1.iron.io | Shared  | IronMq Cloud url. See [IronIo documents](http://dev.iron.io/mq/reference/clouds/) for valid options
+preserveHeaders    | false      | Shared | Should Camel headers be preserved. This will add the Camel headers to the Iron MQ message body as a json payload with a header list, and a message body. This is useful when Camel is both consumer and producer.
 concurrentConsumers | 1             | Consumer  | Number of concurrent consumers.
-timeout      		| 60			| Consumer	| After timeout (in seconds), item will be placed back onto the queue
-maxMessagesPerPoll	| 1				| Consumer | How many messages pr. poll.
+timeout          | 60      | Consumer  | After timeout (in seconds), item will be placed back onto the queue
+maxMessagesPerPoll  | 1        | Consumer | How many messages pr. poll.
 batchDelete | false | Consumer | Should messages be deleted in one batch. This will limit the number of api requests since messages are deleted in one request, instead of one pr. exchange. If enabled care should be taken that the consumer is idempotent when processing exchanges.
 wait | 0 | Consumer | Time in seconds to wait for a message to become available. This enables long polling. Default is 0 (does not wait), maximum is 30.  
-visibilityDelay		| 0				| Producer	| The item will not be available on the queue until this many seconds have passed. Default is 0 seconds.
+visibilityDelay    | 0        | Producer  | The item will not be available on the queue until this many seconds have passed. Default is 0 seconds.
 
 ## The camel message body
 
@@ -60,7 +60,7 @@ CamelIronMQReservedCount|String|The number of times this message has been reserv
 * Consume 50 messages pr. poll from the queue 'testqueue', and save the messages to disk.
 
 
-	from("ironmq:testqueue?projectId=myIronMQProjectid&token=myIronMQToken&maxMessagesPerPoll=50").to("file:somefolder)
+    from("ironmq:testqueue?projectId=myIronMQProjectid&token=myIronMQToken&maxMessagesPerPoll=50").to("file:somefolder)
 
 
 ## Producer example
@@ -68,12 +68,12 @@ CamelIronMQReservedCount|String|The number of times this message has been reserv
 * Take the direct input and enqueue it on 'testqueue'.
 
 
-	from("direct:start").to("ironmq:testqueue?projectId=myIronMQProjectid&token=myIronMQToken").
+    from("direct:start").to("ironmq:testqueue?projectId=myIronMQProjectid&token=myIronMQToken").
 
 * Dequeue from [activemq/jms](http://camel.apache.org/jms.html) and enqueue the message on Ironmq.
 
 
-		from("activemq:foo).to("ironmq:testqueue?projectId=myIronMQProjectid&token=myIronMQToken").
+    from("activemq:foo).to("ironmq:testqueue?projectId=myIronMQProjectid&token=myIronMQToken").
 
 There is a jms example here https://github.com/pax95/ironmq-jms-example
 
@@ -81,6 +81,6 @@ There is a jms example here https://github.com/pax95/ironmq-jms-example
 
 
 
-	$ git clone git://github.com/pax95/camel-ironmq.git
-	$ cd camel-ironmq
-	$ mvn clean install
+  $ git clone git://github.com/pax95/camel-ironmq.git
+  $ cd camel-ironmq
+  $ mvn clean install
