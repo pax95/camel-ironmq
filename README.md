@@ -1,22 +1,24 @@
 camel-ironmq
-============
+===
 
-Ironmq component for Camel supports integration with [IronMQ](http://www.iron.io/products/mq) an elastic and durable hosted message queue service.
+Ironmq component for [Apaceh Camel](http://camel.apache.org) to support integration with [IronMQ](http://www.iron.io/products/mq) an elastic and durable hosted message queue service.
 
 The master branch targets IronMq v3 while v2 is supported using the [v2 branch](https://github.com/pax95/camel-ironmq/tree/v2).
 
 To run it requires a IronMQ account with projectId and token.
 
+See examples below or the [unit tests](https://github.com/pax95/camel-ironmq/tree/master/src/test/java/org/apache/camel/component/ironmq) for how to use Camel and IronMQ together.
+
 Status
-======
+===
 [![Build Status](https://travis-ci.org/pax95/camel-ironmq.svg?branch=master)](https://travis-ci.org/pax95/camel-ironmq)
 
 Uri format:
-===========
+===
 	ironmq://queue-name[?options]
 
 URI options:
-============
+===
 
 Name				| Default value | Context 	| Description
 ------      		| ------------- | ------- 	| -----------
@@ -32,36 +34,49 @@ batchDelete | false | Consumer | Should messages be deleted in one batch. This w
 wait | 0 | Consumer | Time in seconds to wait for a message to become available. This enables long polling. Default is 0 (does not wait), maximum is 30.  
 visibilityDelay		| 0				| Producer	| The item will not be available on the queue until this many seconds have passed. Default is 0 seconds.
 
+The camel message body
+===
+Should be either a String or a array of Strings. In the latter case the batch of strings will be send to IronMq as one request, creating  one message pr. element in the array on IronMq.
+
 Message headers evaluated by the IronMQ producer
-================================================
+===
 
 Header                  |Type  | Description
 ------------------------|------|--------------
 CamelIronMQOperation    |String|If value set to 'CamelIronMQClearQueue' the queue is cleared of unconsumed  messages.
+CamelIronMQMessageId    |String or io.iron.ironmq.Ids|The id of the IronMQ message as a String when sending a single message, or a Ids object when sending a single batch list of string messages.
 
 Message headers set by the IronMQ consumer
-=======================================
+===
 
 Header                  |Type  | Description
 ------------------------|------|--------------
-CamelIronMQMessageId    |String|The id of the IronMQ message.
+CamelIronMQMessageId    |String|The id of the IronMQ message consumed.
 CamelIronMQReservationId|String|The reservation of the IronMQ message.
 CamelIronMQReservedCount|String|The number of times this message has been reserved.
 
 
 Consumer example
-========
+===
+Consume 50 messages pr. poll from the queue 'testqueue', and save the messages to disk.
 
-	from("ironmq:testqueue?projectId=myIronMQProjectid&token=myIronMQToken&maxMessagesPerPoll=50").to(""mock:result"")
+	from("ironmq:testqueue?projectId=myIronMQProjectid&token=myIronMQToken&maxMessagesPerPoll=50").to("file:somefolder)
 
 
 Producer example
-========
+===
+Take the direct input and enqueue it on 'testqueue'.
 
 	from("direct:start").to("ironmq:testqueue?projectId=myIronMQProjectid&token=myIronMQToken").
 
+Dequeue from [activemq/jms](http://camel.apache.org/jms.html) and enqueue the message on Ironmq.
+
+		from("activemq:foo).to("ironmq:testqueue?projectId=myIronMQProjectid&token=myIronMQToken").
+
+There is a jms example here https://github.com/pax95/ironmq-jms-example
+
 Building from source
-====================
+===
 
 
 	$ git clone git://github.com/pax95/camel-ironmq.git
