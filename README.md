@@ -59,21 +59,18 @@ CamelIronMQReservedCount|String|The number of times this message has been reserv
 
 * Consume 50 messages pr. poll from the queue 'testqueue', and save the messages to disk.
 
-
-    from("ironmq:testqueue?projectId=myIronMQProjectid&token=myIronMQToken&maxMessagesPerPoll=50").to("file:somefolder)
+        from("ironmq:testqueue?projectId=myIronMQProjectid&token=myIronMQToken&maxMessagesPerPoll=50").to("file:somefolder)
 
 
 ## Producer example
 
 * Take the direct input and enqueue it on 'testqueue'.
 
-
-    from("direct:start").to("ironmq:testqueue?projectId=myIronMQProjectid&token=myIronMQToken").
+        from("direct:start").to("ironmq:testqueue?projectId=myIronMQProjectid&token=myIronMQToken").
 
 * Dequeue from [activemq/jms](http://camel.apache.org/jms.html) and enqueue the message on Ironmq.
 
-
-    from("activemq:foo).to("ironmq:testqueue?projectId=myIronMQProjectid&token=myIronMQToken").
+        from("activemq:foo).to("ironmq:testqueue?projectId=myIronMQProjectid&token=myIronMQToken").
 
 There is a jms example here https://github.com/pax95/ironmq-jms-example
 
