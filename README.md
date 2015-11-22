@@ -12,7 +12,6 @@ See examples below or the [unit tests](https://github.com/pax95/camel-ironmq/tre
 ## Status
 
 [![Build Status](https://travis-ci.org/pax95/camel-ironmq.svg?branch=master)](https://travis-ci.org/pax95/camel-ironmq)
-[![Coverage Status](https://coveralls.io/repos/pax95/camel-ironmq/badge.svg?branch=master&service=github)](https://coveralls.io/github/pax95/camel-ironmq?branch=master)
 
 ## Uri format:
 
