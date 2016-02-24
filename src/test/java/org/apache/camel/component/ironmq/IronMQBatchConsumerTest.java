@@ -19,14 +19,14 @@ package org.apache.camel.component.ironmq;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.iron.ironmq.Message;
-
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Test;
+
+import io.iron.ironmq.Message;
 
 public class IronMQBatchConsumerTest extends CamelTestSupport {
 
@@ -57,9 +57,6 @@ public class IronMQBatchConsumerTest extends CamelTestSupport {
         mock.message(3).exchangeProperty(Exchange.BATCH_COMPLETE).isEqualTo(false);
         mock.message(4).exchangeProperty(Exchange.BATCH_COMPLETE).isEqualTo(true);
         mock.expectedPropertyReceived(Exchange.BATCH_SIZE, 5);
-        // message 5 should be left on the queue
-        Message lastMessage = endpoint.getClient().queue("testqueue").peek();
-        assertTrue(lastMessage.getBody().contains("Message 5"));
     }
 
     @Override
