@@ -1,5 +1,6 @@
 # camel-ironmq
 
+# This component has been donated to [Apache Camel](http://camel.apache.org/ironmq.html), and will be maintained here.
 
 Ironmq component for [Apaceh Camel](http://camel.apache.org) to support integration with [IronMQ](http://www.iron.io/products/mq) an elastic and durable hosted message queue service.
 
